@@ -20,7 +20,7 @@ export class TutorialsListComponentCust {
   }
 
   retrieveTutorials(): void {
-    this.tutorialService.getAll().subscribe({
+    this.tutorialService.getPublished().subscribe({
       next: (data) => {
         this.tutorials = data;
         console.log(data);

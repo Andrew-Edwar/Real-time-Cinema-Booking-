@@ -43,6 +43,9 @@ export class TutorialDetailsComponentCust {
     });
   }
 
+ 
+ 
+
 getShowTimeByDateAndHour(date: String, hour: string): any | undefined {
   if (this.currentTutorial.ShowTime) {
     return this.currentTutorial.ShowTime.find(
