@@ -13,9 +13,11 @@ import { BoardAdminComponent } from './board-admin/board-admin.component';
 import { BoardModeratorComponent } from './board-moderator/board-moderator.component';
 import { BoardUserComponent } from './board-user/board-user.component';
 import { TutorialsListComponent } from './tutorials-list/tutorials-list.component';
+import { TutorialsListComponentCust } from './tutorials-list-cust/tutorials-list-cust.component';
 import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
 import { httpInterceptorProviders } from './_helpers/http.interceptor';
-import { TutorialDetailsComponent } from './tutorial-details-cust/tutorial-details.component';
+import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-details-cust.component';
+import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +30,10 @@ import { TutorialDetailsComponent } from './tutorial-details-cust/tutorial-detai
     BoardUserComponent,
     TutorialsListComponent,
     AddTutorialComponent,
-    TutorialDetailsComponent
+    TutorialDetailsComponent,
+    TutorialDetailsComponentCust,
+    TutorialsListComponentCust
+
   ],
   imports: [
     BrowserModule,
