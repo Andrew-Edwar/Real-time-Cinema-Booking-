@@ -74,6 +74,15 @@
         </div>
       </div>
       <div class="form-group">
+        <label for="roles">Role</label>
+        <select type="roles" class="form-control" name=“roles” 
+        [(ngModel)]="form.roles" required>
+        <option value="Customer">Customer</option>
+        <option value="Vendor">Vendor</option>
+        </select> 
+
+      </div>
+      <div class="form-group">
         <button class="btn btn-primary btn-block">Sign Up</button>
       </div>
 

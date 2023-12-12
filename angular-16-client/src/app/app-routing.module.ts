@@ -8,6 +8,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { BoardUserComponent } from './board-user/board-user.component';
 import { BoardModeratorComponent } from './board-moderator/board-moderator.component';
 import { BoardAdminComponent } from './board-admin/board-admin.component';
+import { TutorialsListComponent } from './tutorials-list/tutorials-list.component';
+import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
+import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -15,8 +18,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'user', component: BoardUserComponent },
-  { path: 'mod', component: BoardModeratorComponent },
-  { path: 'admin', component: BoardAdminComponent },
+  { path: 'add', component: AddTutorialComponent },
+  { path: 'tutorials', component: TutorialsListComponent },
+  { path: 'tutorials/:id', component: TutorialDetailsComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

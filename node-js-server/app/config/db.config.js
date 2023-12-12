@@ -1,5 +1,6 @@
 module.exports = {
-  HOST: "0.0.0.0",
-  PORT: 27017,
+  HOST: "admin",
+  PORT: 'admin123@cluster0.vcmpsuo.mongodb.net',
   DB: "bezkoder_db"
+
 };

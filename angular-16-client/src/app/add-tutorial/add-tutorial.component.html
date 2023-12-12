@@ -1,0 +1,61 @@
+<div>
+  <div class="submit-form">
+    <div *ngIf="!submitted">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          required
+          [(ngModel)]="tutorial.title"
+          name="title"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input
+          class="form-control"
+          id="description"
+          required
+          [(ngModel)]="tutorial.description"
+          name="description"
+        />
+      </div>
+<div class="form-group">
+        <label for="MovieTime">Movie Time in minutes</label>
+        <input
+          class="form-control"
+          id="MovieTime"
+          type="number"
+          required
+          [(ngModel)]="tutorial.MovieTime"
+          name="MovieTime"
+          min="0"
+          max="240"
+          step="60"
+        />
+      </div>
+
+      <div class="form-group" *ngFor="let showtime of tutorial.ShowTime; let i = index">
+        <label>Show Time {{ i + 1 }}: <br>
+          Date <input class="form-control" type="date" [(ngModel)]="showtime.date" />
+          Hour <input class="form-control" type="time" [(ngModel)]="showtime.hours" />
+         <br> <button (click)="deleteShowTime()" class="btn btn-danger">Delete</button>
+        </label>
+      </div>
+
+      <!-- Add more show times button -->
+      
+      <button  (click)="addShowTime()" class="btn button">Add Show Time</button>
+
+      <button (click)="saveTutorial()" class="btn btn-success">Submit</button>
+    </div>
+
+    <div *ngIf="submitted">
+      <h4>Tutorial was submitted successfully!</h4>
+      <button class="btn btn-success" (click)="newTutorial()">Add</button>
+    </div>
+  </div>
+</div>

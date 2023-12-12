@@ -1,0 +1,41 @@
+<div *ngIf="viewMode">
+  <div *ngIf="currentTutorial.id">
+    <h4>Movie</h4>
+    <div>
+      <label><strong>Title:</strong></label> {{ currentTutorial.title }}
+    </div>
+    <div>
+      <label><strong>Description:</strong></label>
+      {{ currentTutorial.description }}
+    </div>
+    <div>
+      <label><strong>Movie Time:</strong></label>
+      {{ currentTutorial.MovieTime }}
+    </div>
+  
+    <div>
+      <ul class="list-group">
+        <li
+          class="list-group-item"
+          *ngFor="let showtime of currentTutorial.ShowTime; let i = index"
+        >
+        <label><strong>Show Time {{ i + 1 }}:</strong></label><br>
+        <label><strong> Date:</strong> {{ showtime.date }}</label><br>
+        <label><strong> Start Time:</strong> {{ showtime.hours }}</label><br>
+        <label><strong> End Time:</strong> {{ showtime.endTime }}</label>
+      </li>
+      </ul>
+    </div>
+   
+
+    <a class="badge badge-warning" 
+    routerLink="/tutorials/{{ currentTutorial.id }}"> 
+      Book </a>
+  </div>
+
+  <div *ngIf="!currentTutorial">
+    <br />
+    <p>Please click on a Movie...</p>
+  </div>
+</div>
+
