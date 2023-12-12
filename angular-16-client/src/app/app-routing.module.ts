@@ -10,7 +10,7 @@ import { BoardModeratorComponent } from './board-moderator/board-moderator.compo
 import { BoardAdminComponent } from './board-admin/board-admin.component';
 import { TutorialsListComponent } from './tutorials-list/tutorials-list.component';
 import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
-import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
+import { TutorialDetailsComponent } from './tutorial-details-cust/tutorial-details.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },

@@ -1,9 +1,14 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
-var multer  = require('multer');
+
 
 // Define a function to calculate the end time by adding the hours and the movie time
 function calculateEndTime(hours, movieTime) {
+  if (!hours || !movieTime) {
+    // Return an empty string if hours or movieTime is not provided
+    return '';
+  }
+
   // Convert the hours and movie time to minutes
   var hoursInMinutes = parseInt(hours.split(':')[0]) * 60 + parseInt(hours.split(':')[1]);
   var movieTimeInMinutes = movieTime;
@@ -14,6 +19,7 @@ function calculateEndTime(hours, movieTime) {
   // Format the end time as a string
   return ('0' + endHours).slice(-2) + ':' + ('0' + endMinutes).slice(-2);
 }
+
 
 
 

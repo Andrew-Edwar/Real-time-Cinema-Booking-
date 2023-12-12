@@ -15,7 +15,7 @@ import { BoardUserComponent } from './board-user/board-user.component';
 import { TutorialsListComponent } from './tutorials-list/tutorials-list.component';
 import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
 import { httpInterceptorProviders } from './_helpers/http.interceptor';
-import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
+import { TutorialDetailsComponent } from './tutorial-details-cust/tutorial-details.component';
 @NgModule({
   declarations: [
     AppComponent,

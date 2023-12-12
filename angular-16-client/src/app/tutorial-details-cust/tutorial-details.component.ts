@@ -9,24 +9,19 @@ import { formatDate } from '@angular/common';
   templateUrl: './tutorial-details.component.html',
   styleUrls: ['./tutorial-details.component.css'],
 })
+
 export class TutorialDetailsComponent {
   @Input() viewMode = false;
 
   @Input() currentTutorial: Tutorial = {
     title: '',
     description: '',
-    MovieTime:0,
-    ShowTime: [{ date: '', hours: '' , endTime:'' }],
-    published: false
+    MovieTime: 0,
+    ShowTime: [{ date: '', hours: '', endTime: '' }],
+    published: true,
   };
-  @Input() tutorial: Tutorial = {
-    
-    ShowTime: [{ date: '', hours: '' , endTime:'' }],
 
-  };
-  addShowTimeMessage = '';
   message = '';
-
   constructor(
     private tutorialService: TutorialService,
     private route: ActivatedRoute,
@@ -46,11 +41,20 @@ export class TutorialDetailsComponent {
         this.currentTutorial = data;
         console.log(data);
       },
-      error: (e) => console.error(e)
+      error: (e) => console.error(e),
     });
   }
 
   updatePublished(status: boolean): void {
+    if (status && (!this.currentTutorial.MovieTime || this.hasEmptyShowTime())) {
+      console.log('Validation failed:', this.currentTutorial.ShowTime, this.currentTutorial.MovieTime);
+      this.message = 'Please provide MovieTime and ensure all ShowTimes have valid Date and Time before publishing.';
+
+      return;
+    } else {
+      console.log('Validation passed:', this.currentTutorial.ShowTime, this.currentTutorial.MovieTime);
+    }
+  
     const data = {
       title: this.currentTutorial.title,
       description: this.currentTutorial.description,
@@ -58,9 +62,9 @@ export class TutorialDetailsComponent {
       MovieTime: this.currentTutorial.MovieTime,
       published: status
     };
-
+  
     this.message = '';
-
+  
     this.tutorialService.update(this.currentTutorial.id, data).subscribe({
       next: (res) => {
         console.log(res);
@@ -72,7 +76,6 @@ export class TutorialDetailsComponent {
       error: (e) => console.error(e)
     });
   }
-
   updateTutorial(): void {
     this.message = '';
 
@@ -99,12 +102,14 @@ export class TutorialDetailsComponent {
     });
   }
   
-
   addShowTime() {
-    this.tutorial.ShowTime = this.tutorial.ShowTime ?? [];
-    this.tutorial.ShowTime.push({ date: '', hours: '', endTime:'' });
-  }
+    this.currentTutorial.ShowTime = this.currentTutorial.ShowTime ?? [];
   
+   
+  
+    this.currentTutorial.ShowTime.push({ date: '', hours: '', endTime: '' });
+    
+  }
 
 
 deleteShowTime(): void {
@@ -112,6 +117,16 @@ deleteShowTime(): void {
     this.currentTutorial.ShowTime.pop();
   }
 }
+private hasEmptyShowTime(): boolean {
+  return (
+    !!this.currentTutorial.ShowTime &&
+    this.currentTutorial.ShowTime.some(
+      (showTime) =>
+        !showTime.date || showTime.date.trim() === '' || !showTime.hours || showTime.hours.trim() === ''
+    )
+  );
+}
+
 
 
 getShowTimeByDateAndHour(date: String, hour: string): any | undefined {
