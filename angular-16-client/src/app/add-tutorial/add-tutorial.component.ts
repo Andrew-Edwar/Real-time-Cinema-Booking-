@@ -14,109 +14,111 @@ export class AddTutorialComponent {
     MovieTime: 0,
     ShowTime: [{ date: '', hours: '', endTime: '' }],
     published: false,
-
   };
 
-submitted = false;
-titleExists = false;
-movieTimeError = false;
-// New variable to track title existence
+  submitted = false;
+  titleExists = false;
+  movieTimeError = false;
+  oldShowTime=false;
+  hourError=false;
 
-constructor(private tutorialService: TutorialService) {}
+  constructor(private tutorialService: TutorialService) {}
 
+  saveTutorial(): void {
+    let existingTutorials: Tutorial[];
 
-saveTutorial(): void {
-  // Check if the tutorial's title already exists
-  let existingTutorials: Tutorial[]; // Declare the variable
+    this.tutorialService.getAll().subscribe((existingTutorials) => {
+      const isExistingTitle = existingTutorials.some(
+        (existingTutorial) => existingTutorial.title === this.tutorial.title
+      );
+      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const minimumTime = new Date();
+      minimumTime.setHours(minimumTime.getHours() + 6);
+      const minimumTimeString = minimumTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  
-  this.tutorialService.getAll().subscribe((existingTutorials) => {
-    
-    // const isExistingST = existingTutorials.some(existingTutorial =>
-    //   existingTutorial.ShowTime && existingTutorial.ShowTime.length > 0 &&
-    //   existingTutorial.ShowTime.some(existingShowTime =>
-    //     this.tutorial.ShowTime && this.tutorial.ShowTime.length > 0 &&
-    //     existingShowTime.date === this.tutorial.ShowTime[0].date &&
-    //     this.doTimesOverlap(
-    //       new Date(existingShowTime.date + 'T' + existingShowTime.hours),
-    //       new Date(existingShowTime.date + 'T' + existingShowTime.endTime),
-    //       new Date(this.tutorial.ShowTime[0].date + 'T' + this.tutorial.ShowTime[0].hours),
-    //       new Date(this.tutorial.ShowTime[0].date + 'T' + this.tutorial.ShowTime[0].endTime)
-    //     )
-    //   )
-    // );
-
-    // if (isExistingST) {
-    //   this.issoverlapping = true; // Set error state to true
-
-    // }
- 
-    const isExistingTitle = existingTutorials.some(
-      (existingTutorial) => existingTutorial.title === this.tutorial.title
-    );
-
-    if (isExistingTitle) {
-      this.titleExists = true; // Set error state to true
-
-      return;
+      if (
+        this.tutorial.ShowTime &&
+        this.tutorial.ShowTime.some(
+          (showtime) =>
+            showtime?.hours &&
+            (showtime.hours < currentTime || showtime.hours < minimumTimeString)
+        )
+      ) {
+        console.log('Showtime should be at least 6 hours from the current time.');
+this.hourError=true;
+        // Open the time error dialog
       
-    }
-    if (this.tutorial.MovieTime as number < 0 || this.tutorial.MovieTime as number > 240) {
-      console.log('Please enter a positive number for MovieTime and ensure it is less than or equal to 240.');
-      this.movieTimeError = true;
-      return;}  
-    // If the title is unique, proceed with saving the tutorial
-   const data = {
-title: this.tutorial.title,
-description: this.tutorial.description,
-MovieTime: this.tutorial.MovieTime,
-ShowTime: this.tutorial.ShowTime ?? [],
 
-};
+        return;
+      }
+      if (isExistingTitle) {
+        this.titleExists = true; // Set error state to true
+        return;
+      }
 
-    this.tutorialService.create(data).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.submitted = true;
-      },
-      error: (e) => console.error(e)
+      if (this.tutorial.MovieTime as number < 0 || this.tutorial.MovieTime as number > 240) {
+        console.log('Please enter a positive number for MovieTime and ensure it is less than or equal to 240.');
+        this.movieTimeError = true;
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      if (
+        this.tutorial.ShowTime &&
+        this.tutorial.ShowTime.some((showtime) => showtime?.date && showtime.date < today)
+      ) {
+        console.log('Showtime date cannot be before today.');
+        this.oldShowTime=true;
+
+        // Set any additional error flags or handle the error as needed
+        return;
+      }
+
+      const data = {
+        title: this.tutorial.title,
+        description: this.tutorial.description,
+        MovieTime: this.tutorial.MovieTime,
+        ShowTime: this.tutorial.ShowTime ?? [],
+      };
+
+      this.tutorialService.create(data).subscribe({
+        next: (res) => {
+          console.log('Tutorial saved successfully:', res);
+          this.submitted = true;
+        },
+        error: (e) => console.error('Error saving tutorial:', e),
+      });
+
+      // Reset other error flags or perform any additional cleanup
+      this.titleExists = false;
+      this.movieTimeError = false;
+      this.oldShowTime=false;
+      this.hourError=false;
+
     });
-    this.titleExists = false;
-    this.movieTimeError = false;
-  });
-}
-
-
-
-addShowTime() {
-  this.tutorial.ShowTime = this.tutorial.ShowTime ?? [];
-  this.tutorial.ShowTime.push({ date: '', hours: '', endTime:'' });
-}
-
-newTutorial(): void {
-  this.submitted = false;
-  this.tutorial = {
-    title: '',
-    description: '',
-    MovieTime:0,
-    ShowTime:  [{ date: '', hours: '', endTime:'' }],
-    published: false,
-    
-  };
-}
-
-deleteShowTime(): void {
-  if (this.tutorial.ShowTime && this.tutorial.ShowTime.length > 0) {
-    this.tutorial.ShowTime.pop();
   }
-}
-// add-tutorial.component.ts
 
+  addShowTime() {
+    this.tutorial.ShowTime = this.tutorial.ShowTime ?? [];
+    this.tutorial.ShowTime.push({ date: '', hours: '', endTime: '' });
+  }
 
+  newTutorial(): void {
+    this.submitted = false;
+    this.tutorial = {
+      title: '',
+      description: '',
+      MovieTime: 0,
+      ShowTime: [{ date: '', hours: '', endTime: '' }],
+      published: false,
+    };
+  }
 
-
-doTimesOverlap(start1: Date, end1: Date, start2: Date, end2: Date): boolean {
-  return start1 < end2 && end1 > start2;
-}
+  deleteShowTime(): void {
+    if (this.tutorial.ShowTime && this.tutorial.ShowTime.length > 0) {
+      this.tutorial.ShowTime.pop();
+    }
+  }
 
 }
