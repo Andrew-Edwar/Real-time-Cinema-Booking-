@@ -102,11 +102,8 @@ export class TutorialDetailsComponent {
   
   addShowTime() {
     this.currentTutorial.ShowTime = this.currentTutorial.ShowTime ?? [];
-    this.currentTutorial.ShowTime.push({ date: '', hours: '', endTime: '' });
-    
+    this.currentTutorial.ShowTime.push({ date: '', hours: '', endTime: '' }); 
   }
-
-
 deleteShowTime(): void {
   if (this.currentTutorial.ShowTime && this.currentTutorial.ShowTime.length > 0) {
     this.currentTutorial.ShowTime.pop();

@@ -42,7 +42,7 @@
 
       <div class="form-group" *ngFor="let showtime of tutorial.ShowTime; let i = index">
         <label>Show Time {{ i + 1 }}: <br>
-          Date <input class="form-control" type="date" [(ngModel)]="showtime.date" />
+          Date <input class="form-control" type="date" [(ngModel)]="showtime.date" [min]="getCurrentDate()"/>
           Hour <input class="form-control" type="time" [(ngModel)]="showtime.hours" />
          <br> <button (click)="deleteShowTime()" class="btn btn-danger">Delete</button>
         </label>
