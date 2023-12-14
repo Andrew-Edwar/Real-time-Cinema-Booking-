@@ -1,3 +1,5 @@
+import { Cinema } from './cinema.model';
+
 export class Tutorial {
   id?: any;
   title?: string;
@@ -5,4 +7,6 @@ export class Tutorial {
   published?: boolean;
   MovieTime?: Number;
   ShowTime?: { date: String; hours: String ; endTime: String }[]=[];
+  cinemas?: Cinema[];
+
 }

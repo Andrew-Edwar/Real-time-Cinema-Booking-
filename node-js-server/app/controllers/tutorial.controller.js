@@ -45,7 +45,9 @@ exports.create = (req, res) => {
     description: req.body.description,
     MovieTime: req.body.MovieTime,
     ShowTime: ShowTime,
-    published: req.body.published ? req.body.published : false
+    published: req.body.published ? req.body.published : false,
+    cinemas: req.body.cinemas // Assign cinema ids
+
   });
 
   // Save Tutorial in the database

@@ -13,7 +13,9 @@ module.exports = mongoose => {
           endTime: String
         }
       ],
-      cinemaName: String,
+      cinemaName:String,
+      cinemas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cinema' }] // Add this line
+
     },
     { timestamps: true }
   );

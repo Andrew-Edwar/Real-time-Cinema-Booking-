@@ -2,6 +2,7 @@ module.exports = mongoose => {
 
   var schema = mongoose.Schema(
     {
+      id:Number,
       name: String, 
     },
     { timestamps: true }
