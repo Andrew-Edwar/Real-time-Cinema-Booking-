@@ -13,8 +13,10 @@ import { BoardAdminComponent } from './board-admin/board-admin.component';
 import { BoardModeratorComponent } from './board-moderator/board-moderator.component';
 import { BoardUserComponent } from './board-user/board-user.component';
 import { TutorialsListComponent } from './tutorials-list/tutorials-list.component';
+import { CinemasListComponent } from './cinemas-list/cinemas-list.component';
 import { TutorialsListComponentCust } from './tutorials-list-cust/tutorials-list-cust.component';
 import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
+import { AddCinemaComponent } from './add-cinema/add-cinema.component';
 import { httpInterceptorProviders } from './_helpers/http.interceptor';
 import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-details-cust.component';
 import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
@@ -31,8 +33,10 @@ import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.co
     TutorialsListComponent,
     AddTutorialComponent,
     TutorialDetailsComponent,
+    CinemasListComponent,
     TutorialDetailsComponentCust,
-    TutorialsListComponentCust
+    TutorialsListComponentCust,
+    AddCinemaComponent
 
   ],
   imports: [

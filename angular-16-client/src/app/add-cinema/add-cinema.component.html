@@ -1,0 +1,30 @@
+
+<div>
+  <div class="submit-form">
+    <div *ngIf="!submitted">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          required
+          [(ngModel)]="cinema.name"
+          name="name"
+        />
+      </div>
+
+  
+      <button (click)="saveCinema()" class="btn btn-success">Add</button>
+      <div *ngIf="nameExists">
+        <br><p class="error-message">A cinema with the same name already exists. Please choose a different name.</p>
+      </div>
+
+    </div>
+    <div *ngIf="submitted">
+      <h4>Cinema was added successfully!</h4>
+      <button class="btn btn-success" (click)="newCinema()">Add</button>
+     
+    </div>
+  </div>
+</div>

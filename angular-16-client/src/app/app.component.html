@@ -9,11 +9,19 @@
       <li class="nav-item" *ngIf="showAdminBoard">
         <a href="/tutorialsCust" class="nav-link" routerLink="tutorialsCust">Movies List</a>
       </li>
+      
       <li class="nav-item" *ngIf="showModeratorBoard">
         <a href="/add" class="nav-link" routerLink="add">Add Movie</a>  
-      </li>
+      </li> 
       <li class="nav-item" *ngIf="showModeratorBoard">
         <a href="/tutorials" class="nav-link" routerLink="tutorials">Movies List</a>
+      </li>
+      <li class="nav-item" *ngIf="showModeratorBoard">
+        <a href="/addcinema" class="nav-link" routerLink="addcinema">Add Cinema</a>  
+      </li>
+     
+      <li class="nav-item" *ngIf="showModeratorBoard">
+        <a href="/cinemas" class="nav-link" routerLink="cinemas">Cinemas List</a>
       </li>
       <!-- <li class="nav-item">
         <a href="/user" class="nav-link" *ngIf="isLoggedIn" routerLink="user">User</a>

@@ -19,69 +19,69 @@ export class AddTutorialComponent {
   submitted = false;
   titleExists = false;
   movieTimeError = false;
-  oldShowTime=false;
-  hourError=false;
+  oldShowTime = false;
+  hourError = false;
 
   constructor(private tutorialService: TutorialService) {}
 
   saveTutorial(): void {
     let existingTutorials: Tutorial[];
-
+  
     this.tutorialService.getAll().subscribe((existingTutorials) => {
       const isExistingTitle = existingTutorials.some(
         (existingTutorial) => existingTutorial.title === this.tutorial.title
       );
-      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const minimumTime = new Date();
-      minimumTime.setHours(minimumTime.getHours() + 6);
-      const minimumTimeString = minimumTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+  
       if (
         this.tutorial.ShowTime &&
         this.tutorial.ShowTime.some(
-          (showtime) =>
-            showtime?.hours &&
-            (showtime.hours < currentTime || showtime.hours < minimumTimeString)
+          (showtime) => {
+            const currentTime = new Date();
+            const minimumTime = new Date();
+            minimumTime.setHours(minimumTime.getHours() + 6);
+  
+            const showTimeDate = new Date(showtime?.date + ' ' + showtime?.hours);
+            return showTimeDate < currentTime || showTimeDate < minimumTime;
+          }
         )
       ) {
         console.log('Showtime should be at least 6 hours from the current time.');
-this.hourError=true;
+        this.hourError = true;
         // Open the time error dialog
-      
-
+  
         return;
       }
+  
       if (isExistingTitle) {
         this.titleExists = true; // Set error state to true
         return;
       }
-
+  
       if (this.tutorial.MovieTime as number < 0 || this.tutorial.MovieTime as number > 240) {
         console.log('Please enter a positive number for MovieTime and ensure it is less than or equal to 240.');
         this.movieTimeError = true;
         return;
       }
-
+  
       const today = new Date().toISOString().split('T')[0];
-
+  
       if (
         this.tutorial.ShowTime &&
         this.tutorial.ShowTime.some((showtime) => showtime?.date && showtime.date < today)
       ) {
         console.log('Showtime date cannot be before today.');
-        this.oldShowTime=true;
-
+        this.oldShowTime = true;
         // Set any additional error flags or handle the error as needed
         return;
       }
-
+  
       const data = {
         title: this.tutorial.title,
         description: this.tutorial.description,
         MovieTime: this.tutorial.MovieTime,
         ShowTime: this.tutorial.ShowTime ?? [],
       };
-
+  
       this.tutorialService.create(data).subscribe({
         next: (res) => {
           console.log('Tutorial saved successfully:', res);
@@ -89,16 +89,23 @@ this.hourError=true;
         },
         error: (e) => console.error('Error saving tutorial:', e),
       });
-
+  
       // Reset other error flags or perform any additional cleanup
       this.titleExists = false;
       this.movieTimeError = false;
-      this.oldShowTime=false;
-      this.hourError=false;
-
+      this.oldShowTime = false;
+      this.hourError = false;
     });
   }
-
+  
+  isShowtimeValid(selectedTime: string, currentTime: string, minimumTime: string): boolean {
+    const selectedDate = new Date(`2000-01-01T${selectedTime}`);
+    const currentDate = new Date(`2000-01-01T${currentTime}`);
+    const minimumAllowedDate = new Date(`2000-01-01T${minimumTime}`);
+  
+    return selectedDate >= minimumAllowedDate && selectedDate >= currentDate;
+  }
+  
   addShowTime() {
     this.tutorial.ShowTime = this.tutorial.ShowTime ?? [];
     this.tutorial.ShowTime.push({ date: '', hours: '', endTime: '' });
@@ -127,5 +134,4 @@ this.hourError=true;
     const day = today.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-
 }
