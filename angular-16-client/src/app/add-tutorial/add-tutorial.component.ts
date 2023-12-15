@@ -3,6 +3,7 @@ import { Tutorial } from 'src/app/models/tutorial.model';
 import { TutorialService } from 'src/app/_services/tutorial.service';
 import { CinemaService } from 'src/app/_services/cinema.service';
 import { Cinema } from '../models/cinema.model';
+import { StorageService } from '../_services/storage.service';
 
 @Component({
   selector: 'app-add-tutorial',
@@ -10,6 +11,7 @@ import { Cinema } from '../models/cinema.model';
   styleUrls: ['./add-tutorial.component.css'],
 })
 export class AddTutorialComponent implements OnInit {
+
   tutorial: Tutorial = {
     title: '',
     description: '',
@@ -17,8 +19,9 @@ export class AddTutorialComponent implements OnInit {
     ShowTime: [{ date: '', hours: '', endTime: '' }],
     published: false,
     cinemas: [], // Added cinemas property
-  };
-
+    vendorID:''
+  }; 
+  
   submitted = false;
   titleExists = false;
   movieTimeError = false;
@@ -30,7 +33,8 @@ export class AddTutorialComponent implements OnInit {
 
   constructor(
     private tutorialService: TutorialService,
-    private cinemaService: CinemaService
+    private cinemaService: CinemaService,
+    private storageService: StorageService
   ) {}
 
   ngOnInit(): void {
@@ -98,7 +102,7 @@ export class AddTutorialComponent implements OnInit {
         // Set any additional error flags or handle the error as needed
         return;
       }
-
+      const currentUser = this.storageService.getUser();
       // Add cinemas to the data object
       const data = {
         title: this.tutorial.title,
@@ -106,7 +110,9 @@ export class AddTutorialComponent implements OnInit {
         MovieTime: this.tutorial.MovieTime,
         ShowTime: this.tutorial.ShowTime ?? [],
         cinemas: this.tutorial.cinemas ?? [], // Include cinemas
+        vendorID:currentUser.id
       };
+      
 
       this.tutorialService.create(data).subscribe({
         next: (res) => {
@@ -154,6 +160,7 @@ export class AddTutorialComponent implements OnInit {
       ShowTime: [{ date: '', hours: '', endTime: '' }],
       cinemas: [],
       published: false,
+      vendorID:''
     };
   }
 

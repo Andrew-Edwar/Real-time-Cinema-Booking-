@@ -8,5 +8,6 @@ export class Tutorial {
   MovieTime?: Number;
   ShowTime?: { date: String; hours: String ; endTime: String }[]=[];
   cinemas?: Cinema[];
+  vendorID?: any;
 
 }
