@@ -146,12 +146,17 @@ exports.update = (req, res) => {
 
       // Update fields
       existingTutorial.title = req.body.title;
-      existingTutorial.description = req.body.description;
-      existingTutorial.MovieTime = req.body.MovieTime;
-      existingTutorial.ShowTime = ShowTime;
+  existingTutorial.description = req.body.description;
+  existingTutorial.MovieTime = req.body.MovieTime;
+  existingTutorial.ShowTime = ShowTime;
+
+  // Set the tutorial's cinemas to the selected cinemas
+  existingTutorial.cinemas = selectedCinemas;
+
+  // Update the published status
+  existingTutorial.published = req.body.published;
 
       // Set the tutorial's cinemas to the selected cinemas
-      existingTutorial.cinemas = selectedCinemas;
 
       // Save the updated tutorial
       existingTutorial.save()
