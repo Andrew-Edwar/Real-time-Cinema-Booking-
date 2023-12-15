@@ -4,6 +4,7 @@ module.exports = mongoose => {
     {
       id:Number,
       name: String, 
+      vendorID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     },
     { timestamps: true }
   );

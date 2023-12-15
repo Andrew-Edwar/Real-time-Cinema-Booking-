@@ -14,7 +14,7 @@ module.exports = mongoose => {
         }
       ],
       cinemas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cinema' }],// Add this line
-      vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }// Add this line
+      vendorID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }// Add this line
       
 
     },

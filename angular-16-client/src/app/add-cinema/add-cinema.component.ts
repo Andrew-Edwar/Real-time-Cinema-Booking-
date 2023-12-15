@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CinemaService } from 'src/app/_services/cinema.service';
 import { Cinema } from '../models/cinema.model';
+import { StorageService } from '../_services/storage.service';
 
 @Component({
   selector: 'app-add-cinema',
@@ -10,6 +11,7 @@ import { Cinema } from '../models/cinema.model';
 export class AddCinemaComponent {
   cinema: Cinema = {
     name: '',
+    vendorID:''
 
   };
 
@@ -17,7 +19,8 @@ export class AddCinemaComponent {
   nameExists = false;
  
 
-  constructor(private cinemaService: CinemaService) {}
+  constructor(private cinemaService: CinemaService,
+    private storageService: StorageService) {}
 
   saveCinema(): void {
     let existingCinemas: Cinema[];
@@ -32,10 +35,12 @@ export class AddCinemaComponent {
         this.nameExists = true; // Set error state to true
         return;
       }
-
+      const currentUser = this.storageService.getUser();
       const data = {
         name: this.cinema.name,
+        vendorID:currentUser.id
       };
+      console.log('Data to be saved:', data);
 
       this.cinemaService.create(data).subscribe({
         next: (res) => {
@@ -57,6 +62,7 @@ export class AddCinemaComponent {
     this.submitted = false;
     this.cinema = {
       name: '',
+      vendorID:''
   
     };
   }

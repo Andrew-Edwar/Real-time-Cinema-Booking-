@@ -1,6 +1,6 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
-const User = db.user 
+
 
 // Define a function to calculate the end time by adding the hours and the movie time
 function calculateEndTime(hours, movieTime) {
@@ -47,7 +47,7 @@ exports.create = (req, res) => {
     ShowTime: ShowTime,
     published: req.body.published ? req.body.published : false,
     cinemas: req.body.cinemas,
-    vendor: req.body.vendor
+    vendorID: req.body.vendorID,
 
   });
 

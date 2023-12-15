@@ -12,6 +12,7 @@ exports.create = (req, res) => {
   // Create a Tutorial
   const cinema = new Cinema({
     name: req.body.name,
+    vendorID: req.body.vendorID,
   });
 
   // Save Tutorial in the database

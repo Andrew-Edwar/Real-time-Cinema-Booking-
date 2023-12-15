@@ -112,7 +112,7 @@ export class AddTutorialComponent implements OnInit {
         cinemas: this.tutorial.cinemas ?? [], // Include cinemas
         vendorID:currentUser.id
       };
-      
+      console.log('Data to be saved:', data);
 
       this.tutorialService.create(data).subscribe({
         next: (res) => {
