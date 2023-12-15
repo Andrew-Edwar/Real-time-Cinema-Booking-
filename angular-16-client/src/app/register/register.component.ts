@@ -11,7 +11,7 @@ export class RegisterComponent {
     username: null,
     email: null,
     password: null,
-    roles:"Customer"
+    roles:null,
   };
   isSuccessful = false;
   isSignUpFailed = false;

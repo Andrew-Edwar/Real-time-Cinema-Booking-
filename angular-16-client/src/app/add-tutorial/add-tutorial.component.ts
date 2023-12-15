@@ -130,10 +130,19 @@ export class AddTutorialComponent implements OnInit {
     });
   }
   cinemaCheckboxChanged(cinema: Cinema): void {
-    const cinemaIndex = this.tutorial.cinemas?.findIndex((c) => c.id === cinema.id);
-        this.tutorial.cinemas?.push(cinema);
+    const isCinemaSelected = this.isCinemaSelected(cinema);
+
+    if (isCinemaSelected) {
+      // If cinema is selected, remove it
+      const cinemaIndex = this.tutorial.cinemas?.findIndex(c => c.id === cinema.id);
+      if (cinemaIndex !== undefined && cinemaIndex !== -1) {
+        this.tutorial.cinemas?.splice(cinemaIndex, 1);
+      }
+    } else {
+      // If cinema is not selected, add it
+      this.tutorial.cinemas?.push(cinema);
+    }
   }
-  
   
   isCinemaSelected(cinema: Cinema): boolean {
     return this.tutorial.cinemas?.some((c) => c.id === cinema.id) ?? false;
