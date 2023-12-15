@@ -113,26 +113,48 @@ exports.update = (req, res) => {
   const ShowTime = req.body.ShowTime.map(ShowTime => ({
     date: ShowTime.date,
     hours: ShowTime.hours,
-    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime) // Use the calculateEndTime function and the MovieTime property of the request body
+    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime)
   }));
 
-  // Update the tutorial with the new show time array
-  Tutorial.findByIdAndUpdate(id, {...req.body, ShowTime}, { useFindAndModify: false })
-    .then(data => {
-      if (!data) {
+  // Get the selected cinema IDs from the request body
+  const selectedCinemas = req.body.cinemas || [];
+
+  // Find the existing tutorial
+  Tutorial.findById(id)
+    .then(existingTutorial => {
+      if (!existingTutorial) {
         res.status(404).send({
-          message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found!`
+          message: `Cannot update Tutorial with id=${id}. Tutorial not found!`
         });
-      } else res.send({ message: "Tutorial was updated successfully." });
+        return;
+      }
+
+      // Update fields
+      existingTutorial.title = req.body.title;
+      existingTutorial.description = req.body.description;
+      existingTutorial.MovieTime = req.body.MovieTime;
+      existingTutorial.ShowTime = ShowTime;
+
+      // Set the tutorial's cinemas to the selected cinemas
+      existingTutorial.cinemas = selectedCinemas;
+
+      // Save the updated tutorial
+      existingTutorial.save()
+        .then(data => {
+          res.send({ message: "Tutorial was updated successfully.", data });
+        })
+        .catch(err => {
+          res.status(500).send({
+            message: "Error updating Tutorial with id=" + id
+          });
+        });
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating Tutorial with id=" + id
+        message: "Error retrieving Tutorial with id=" + id
       });
     });
 };
-
-
 // Delete a Tutorial with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
