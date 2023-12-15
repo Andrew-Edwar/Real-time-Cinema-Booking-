@@ -45,6 +45,21 @@ exports.findAll = (req, res) => {
       });
     });
 };
+exports.findAllByVendorID = (req, res) => {
+  const vendorID = req.query.vendorID;
+  var condition = vendorID ? { vendorID  } : {};
+
+  Cinema.find(condition)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving cinemas."
+      });
+    });
+};
 
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
@@ -129,6 +144,23 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+// Delete all Tutorials from the database.
+exports.deleteAllByVendorID = (req, res) => {
+  const vendorID = req.query.vendorID;
+  var condition = vendorID ? { vendorID  } : {};
+  Cinema.deleteMany(condition)
+    .then(data => {
+      res.send({
+        message: `${data.deletedCount} Cinemas were deleted successfully!`
+      });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all Cinemas."
+      });
+    });
+};
 
 // Find all published Tutorials
 exports.findAllPublished = (req, res) => {
@@ -143,3 +175,22 @@ exports.findAllPublished = (req, res) => {
       });
     });
 };
+// exports.findByVendorID = (req, res) => {
+//   const vendorID = req.query.vendorID;
+
+//   if (!vendorID) {
+//     res.status(400).send({ message: "VendorID parameter is required." });
+//     return;
+//   }
+
+//   Cinema.find({ vendorID: vendorID })
+//     .then(data => {
+//       res.send(data);
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while retrieving cinemas by vendorID."
+//       });
+//     });
+// };

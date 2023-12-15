@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Tutorial } from 'src/app/models/tutorial.model';
 import { TutorialService } from 'src/app/_services/tutorial.service';
+import { StorageService } from '../_services/storage.service';
 
 @Component({
   selector: 'app-tutorials-list',
@@ -13,14 +14,14 @@ export class TutorialsListComponent {
   currentIndex = -1;
   title = '';
 
-  constructor(private tutorialService: TutorialService) {}
+  constructor(private tutorialService: TutorialService,private storageService: StorageService) {}
 
   ngOnInit(): void {
     this.retrieveTutorials();
   }
-
+  currentUser = this.storageService.getUser();
   retrieveTutorials(): void {
-    this.tutorialService.getAll().subscribe({
+    this.tutorialService.findByVendorID(this.currentUser.id).subscribe({
       next: (data) => {
         this.tutorials = data;
         console.log(data);
@@ -41,7 +42,7 @@ export class TutorialsListComponent {
   }
 
   removeAllTutorials(): void {
-    this.tutorialService.deleteAll().subscribe({
+    this.tutorialService.deleteAllByVendorID(this.currentUser.id).subscribe({
       next: (res) => {
         console.log(res);
         this.refreshList();

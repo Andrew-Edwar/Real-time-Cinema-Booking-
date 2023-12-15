@@ -43,4 +43,11 @@ export class CinemaService {
   findByName(name: any): Observable<Cinema[]> {
     return this.http.get<Cinema[]>(`${baseUrl}?name=${name}`);
   }
+  findByVendorID(vendorID: any): Observable<Cinema[]> {
+    return this.http.get<Cinema[]>(`${baseUrl}/VendorID?vendorID=${vendorID}`);
+  }
+
+  deleteAllByVendorID(vendorID: any): Observable<Cinema[]> {
+    return this.http.delete<Cinema[]>(`${baseUrl}/VendorIDdel/vendorID?vendorID=${vendorID}`);
+  }
 }

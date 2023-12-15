@@ -9,6 +9,8 @@ module.exports = app => {
   // Retrieve all Tutorials
   router.get("/", tutorials.findAll);
 
+  router.get("/VendorID", tutorials.findAllByVendorID);
+
   // Retrieve all published Tutorials
   router.get("/published", tutorials.findAllPublished);
 
@@ -23,7 +25,9 @@ module.exports = app => {
 
   // Create a new Tutorial
   router.delete("/", tutorials.deleteAll);
-
+  
+  router.delete("/VendorIDdel/vendorID", tutorials.deleteAllByVendorID);
+  
   app.use("/api/tutorials", router);
 };
 

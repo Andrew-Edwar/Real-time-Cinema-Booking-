@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Cinema } from 'src/app/models/cinema.model';
 import { CinemaService } from 'src/app/_services/cinema.service';
+import { StorageService } from '../_services/storage.service';
 
 @Component({
   selector: 'app-cineams-list',
@@ -13,14 +14,15 @@ export class CinemasListComponent {
   currentIndex = -1;
   name = '';
 
-  constructor(private cinemaService: CinemaService) {}
+  constructor(private cinemaService: CinemaService,private storageService: StorageService) {}
 
   ngOnInit(): void {
     this.retrieveCinemas();
   }
-
+  currentUser = this.storageService.getUser();
+  
   retrieveCinemas(): void {
-    this.cinemaService.getAll().subscribe({
+    this.cinemaService.findByVendorID(this.currentUser.id).subscribe({
       next: (data) => {
         this.cinemas = data;
         console.log(data);
@@ -41,7 +43,7 @@ export class CinemasListComponent {
   }
 
   removeAllCinemas(): void {
-    this.cinemaService.deleteAll().subscribe({
+    this.cinemaService.deleteAllByVendorID(this.currentUser.id).subscribe({
       next: (res) => {
         console.log(res);
         this.refreshList();

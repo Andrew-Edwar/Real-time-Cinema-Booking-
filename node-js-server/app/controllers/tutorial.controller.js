@@ -81,6 +81,21 @@ exports.findAll = (req, res) => {
       });
     });
 };
+exports.findAllByVendorID = (req, res) => {
+  const vendorID = req.query.vendorID;
+  var condition = vendorID ? { vendorID  } : {};
+
+  Tutorial.find(condition)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving movies."
+      });
+    });
+};
 
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
@@ -193,7 +208,22 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
-
+exports.deleteAllByVendorID = (req, res) => {
+  const vendorID = req.query.vendorID;
+  var condition = vendorID ? { vendorID  } : {};
+  Tutorial.deleteMany(condition)
+    .then(data => {
+      res.send({
+        message: `${data.deletedCount} movie were deleted successfully!`
+      });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all movie."
+      });
+    });
+};
 // Find all published Tutorials
 exports.findAllPublished = (req, res) => {
   Tutorial.find({ published: true })

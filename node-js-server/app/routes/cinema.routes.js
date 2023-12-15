@@ -8,7 +8,7 @@ module.exports = app => {
 
   // Retrieve all Tutorials
   router.get("/", cinemas.findAll);
-
+  router.get("/VendorID", cinemas.findAllByVendorID);
   // Retrieve all published Tutorials
   router.get("/published", cinemas.findAllPublished);
 
@@ -23,6 +23,10 @@ module.exports = app => {
 
   // Create a new Tutorial
   router.delete("/", cinemas.deleteAll);
+
+  router.delete("/VendorIDdel/vendorID", cinemas.deleteAllByVendorID);
+
+  // router.get("/byVendorID", cinemas.findByVendorID);
 
   app.use("/api/cinemas", router);
 };
