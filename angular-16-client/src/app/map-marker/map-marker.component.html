@@ -5,11 +5,14 @@
             [center]="center"
             [zoom]="zoom"
             >
-  <map-marker #marker="mapMarker"
-              *ngFor="let markerPosition of markerPositions; let i = index"
-              [position]="markerPosition"
-              (mapClick)="openInfoWindow(marker)">
-              <map-info-window>Info Window content</map-info-window>
-  </map-marker>
-</google-map>
+  <ng-container *ngFor="let markerPositionAndName of markerPositionsAndNames; let i = index">
+    <map-marker #marker="mapMarker"
+                [position]="markerPositionAndName.position"
+                (mapClick)="openInfoWindow(marker, markerPositionAndName.name)">
+                <map-info-window ><h6>{{ selectedMarkerContent }}</h6></map-info-window>
+    </map-marker>
+  </ng-container>
 
+  <!-- Separate template for map-info-window outside the loop -->
+  
+</google-map>

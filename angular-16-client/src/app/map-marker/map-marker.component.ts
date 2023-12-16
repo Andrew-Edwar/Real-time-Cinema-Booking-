@@ -1,10 +1,9 @@
 // map-marker.component.ts
-// import { AgmInfoWindow } from '@agm/core';
+
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CinemaService } from 'src/app/_services/cinema.service';
 import { Cinema } from '../models/cinema.model';
 import { MapInfoWindow, MapMarker } from '@angular/google-maps';
-import { Component, OnInit, ViewChild } from '@angular/core';
-
 
 @Component({
   selector: 'app-map-marker',
@@ -17,21 +16,22 @@ export class MapMarkerComponent implements OnInit {
 
   constructor(private cinemaService: CinemaService) {}
 
+  center: google.maps.LatLngLiteral = { lat: 24, lng: 12 };
+  zoom = 4;
+  markerOptions: google.maps.MarkerOptions = { draggable: false };
+  markerPositionsAndNames: { position: google.maps.LatLngLiteral, name: any }[] = [];
+  cinemas?: Cinema[];
+  selectedMarkerContent: string | undefined;
+
   ngOnInit(): void {
     this.fetchAndDisplayAllCinemas();
   }
-  
-  center: google.maps.LatLngLiteral = {lat: 24, lng: 12};
-  zoom = 4;
-  markerOptions: google.maps.MarkerOptions = {draggable: false};
-  markerPositions: google.maps.LatLngLiteral[] = [];
-  cinemas?: Cinema[];
 
   fetchAndDisplayAllCinemas(): void {
     this.cinemaService.getAll().subscribe(
       (cinemas) => {
         this.cinemas = cinemas;
-        this.markerPositions = [];
+        this.markerPositionsAndNames = [];
 
         // Iterate through cinemas and add markers to the map
         this.cinemas.forEach((cinema) => {
@@ -40,7 +40,7 @@ export class MapMarkerComponent implements OnInit {
               lat: location.latitude,
               lng: location.longitude,
             };
-            this.markerPositions.push(latLng);
+            this.markerPositionsAndNames.push({ position: latLng, name: cinema.name });
           });
         });
       },
@@ -50,8 +50,10 @@ export class MapMarkerComponent implements OnInit {
     );
   }
 
-  openInfoWindow(marker: MapMarker) {
-    if(this.infoWindow != undefined)
-    this.infoWindow.open(marker);
+  openInfoWindow(marker: MapMarker, content: string) {
+    this.selectedMarkerContent = content;
+    if (this.infoWindow != undefined) {
+      this.infoWindow.open(marker);
+    }
   }
 }
