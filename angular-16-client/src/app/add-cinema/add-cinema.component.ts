@@ -28,8 +28,13 @@ export class AddCinemaComponent implements OnInit {
   markerPositions: google.maps.LatLngLiteral[] = [];
   
   addMarker(event: google.maps.MapMouseEvent) {
-    if(event.latLng != null)
-    this.markerPositions.push(event.latLng.toJSON());
+    if (event.latLng != null) {
+      // Clear existing markers
+      this.markerPositions = [];
+      
+      // Add the new marker
+      this.markerPositions.push(event.latLng.toJSON());
+    }
   }
  
   
