@@ -10,6 +10,7 @@ import { TutorialService } from 'src/app/_services/tutorial.service';
   styleUrls: ['./tutorials-list-cust.component.css'],
 })
 export class TutorialsListComponentCust {
+   selectedVendor: any; // Add this property
   tutorials?: Tutorial[];
   vendors?: any[];
   currentTutorial: Tutorial = {};
@@ -92,5 +93,14 @@ export class TutorialsListComponentCust {
       },
       error: (e) => console.error(e),
     });
+  }
+  onVendorChange() {
+    // Implement any logic you need when the vendor selection changes
+    // Access the selected vendor using this.selectedVendor.
+    // For example, you can set the currentVendor or perform other actions.
+    this.currentVendor = this.selectedVendor;
+    // Reset the tutorial-related properties
+    this.currentTutorial = {};
+    this.currentIndex = -1;
   }
 }
