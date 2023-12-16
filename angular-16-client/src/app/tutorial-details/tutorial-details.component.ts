@@ -24,7 +24,10 @@ export class TutorialDetailsComponent {
   message = '';
   cinemas: Cinema[] = [];
   selectedCinemaId: string | undefined; // New property to store selected cinema ID
-
+  hourError = false;
+  oldShowTime = false;
+  movieTimeError=false;
+  titleExists=false;
   constructor(
     private tutorialService: TutorialService,
     private route: ActivatedRoute,
@@ -71,6 +74,7 @@ export class TutorialDetailsComponent {
 
   getTutorial(id: string): void {
     this.tutorialService.get(id).subscribe({
+      
       next: (data) => {
         this.currentTutorial = data;
         console.log(data);
@@ -111,7 +115,40 @@ export class TutorialDetailsComponent {
 
   updateTutorial(): void {
     this.message = '';
+if (
+      this.currentTutorial.ShowTime &&
+      this.currentTutorial.ShowTime.some(
+        (showtime) => {
+          const currentTime = new Date();
+          const minimumTime = new Date();
+          minimumTime.setHours(minimumTime.getHours() + 6);
 
+          const showTimeDate = new Date(showtime?.date + ' ' + showtime?.hours);
+          return showTimeDate < currentTime || showTimeDate < minimumTime;
+        }
+      )
+    ) {
+      console.log('Showtime should be at least 6 hours from the current time.');
+      this.hourError = true;
+      // Open the time error dialog
+
+      return;
+    }
+    const today = new Date().toISOString().split('T')[0];
+    if (
+      this.currentTutorial.ShowTime &&
+      this.currentTutorial.ShowTime.some((showtime) => showtime?.date && showtime.date < today)
+    ) {
+      console.log('Showtime date cannot be before today.');
+      this.oldShowTime = true;
+      // Set any additional error flags or handle the error as needed
+      return;
+    }
+    if (this.currentTutorial.MovieTime as number < 0 || this.currentTutorial.MovieTime as number > 240) {
+      console.log('Please enter a positive number for MovieTime and ensure it is less than or equal to 240.');
+      this.movieTimeError = true;
+      return;
+    }
     const data = {
       title: this.currentTutorial.title,
       description: this.currentTutorial.description,
@@ -120,14 +157,29 @@ export class TutorialDetailsComponent {
       published: this.currentTutorial.published,
       cinemas: this.currentTutorial.cinemas?.map((cinema) => cinema.id),
     };
+    this.tutorialService.getAll().subscribe((existingTutorials) => {
+      const isExistingTitle = existingTutorials.some(
+        (existingTutorial) => existingTutorial.title === this.currentTutorial.title
+      );
+      if (isExistingTitle) {
+        this.titleExists = true; // Set error state to true
+        return;
+      }})
 
     this.tutorialService.update(this.currentTutorial.id, data).subscribe({
+      
       next: (res) => {
         console.log(res);
         this.message = res.message ? res.message : 'This tutorial was updated successfully!';
       },
       error: (e) => console.error(e),
     });
+    
+   this. hourError = false;
+   this.  oldShowTime = false;
+   this.movieTimeError=false;
+   this.titleExists=false;
+
   }
 
   getSelectedCinemaIds(): number[] {
@@ -177,4 +229,12 @@ export class TutorialDetailsComponent {
   isCinemaSelected(cinema: Cinema): boolean {
     return this.currentTutorial.cinemas?.some((c) => c.id === cinema.id) ?? false;
   }
+  getCurrentDate(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+ 
 }

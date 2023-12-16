@@ -25,4 +25,13 @@ export class UserService {
   getAdminBoard(): Observable<any> {
     return this.http.get(API_URL + 'admin', { responseType: 'text' });
   }
+  // getVendors(): Observable<any> {
+  //   return this.http.get(API_URL + 'Vendor', { responseType: 'text' });
+  //   // Change 'Vendor' to 'vendor' to match the backend endpoint
+  // }
+  getVendors(): Observable<any[]> {
+    // Replace 'allVendorsEndpoint' with the actual endpoint for fetching all vendors
+    const allVendorsEndpoint = 'Vendor';
+    return this.http.get<any[]>(API_URL + allVendorsEndpoint);
+  }
 }

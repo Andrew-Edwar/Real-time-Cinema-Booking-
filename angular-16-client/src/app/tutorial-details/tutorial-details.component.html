@@ -100,7 +100,7 @@
           <br>
           <div class="form-group">
             <label for="date">Date:</label>
-            <input class="form-control" type="date" [(ngModel)]="showTime.date" name="date" placeholder="Date"/>
+           <input class="form-control" type="date" [(ngModel)]="showTime.date" [min]="getCurrentDate()" />
           </div>
           <div class="form-group">
             <label for="time">Time:</label>
@@ -158,5 +158,17 @@ class="badge badge-primary mr-2"
       Update
     </button>
     <p>{{ message }}</p>
+    <div *ngIf="titleExists">
+      <br /><p class="error-message">A tutorial with the same title already exists. Please choose a different title.</p>
+    </div>
+    <div *ngIf="movieTimeError">
+      <br /><p class="error-message">Time cannot be negative 😗</p>
+    </div>
+    <div *ngIf="oldShowTime">
+      <br /><p class="error-message">Showtime date cannot be before today.</p>
+    </div>
+    <div *ngIf="hourError">
+      <br /><p class="error-message">Showtime should be at least 6 hours from the current time.</p>
+    </div>
   </div>
 </ng-template>
