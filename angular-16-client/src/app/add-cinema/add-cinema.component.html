@@ -13,8 +13,19 @@
           name="name"
         />
       </div>
-
-  
+ <!-- google-map-demo.component.html -->
+ <div>
+<google-map height="400px"
+width="750px"
+[center]="center"
+[zoom]="zoom"
+(mapClick)="addMarker($event)">
+<map-marker *ngFor="let markerPosition of markerPositions"
+  [position]="markerPosition"
+  [options]="markerOptions"></map-marker>
+</google-map>
+    </div>
+    <br>
       <button (click)="saveCinema()" class="btn btn-success">Add</button>
       <div *ngIf="nameExists">
         <br><p class="error-message">A cinema with the same name already exists. Please choose a different name.</p>

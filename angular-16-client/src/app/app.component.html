@@ -9,7 +9,9 @@
       <li class="nav-item" *ngIf="showAdminBoard">
         <a href="/tutorialsCust" class="nav-link" routerLink="tutorialsCust">Movies List</a>
       </li>
-      
+         <li class="nav-item" *ngIf="showAdminBoard">
+        <a href="/map-marker" class="nav-link" routerLink="map-marker">Cinema Locations</a>  
+      </li>
       <li class="nav-item" *ngIf="showModeratorBoard">
         <a href="/add" class="nav-link" routerLink="add">Add Movie</a>  
       </li> 
@@ -23,6 +25,7 @@
       <li class="nav-item" *ngIf="showModeratorBoard">
         <a href="/cinemas" class="nav-link" routerLink="cinemas">Cinemas List</a>
       </li>
+   
       <!-- <li class="nav-item">
         <a href="/user" class="nav-link" *ngIf="isLoggedIn" routerLink="user">User</a>
       </li> -->

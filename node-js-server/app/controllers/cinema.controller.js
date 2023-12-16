@@ -13,6 +13,7 @@ exports.create = (req, res) => {
   const cinema = new Cinema({
     name: req.body.name,
     vendorID: req.body.vendorID,
+    locations: req.body.locations || [],
   });
 
   // Save Tutorial in the database
@@ -194,3 +195,15 @@ exports.findAllPublished = (req, res) => {
 //       });
 //     });
 // };
+
+exports.findAll = (req, res) => {
+  Cinema.find()
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while retrieving cinemas.',
+      });
+    });
+};

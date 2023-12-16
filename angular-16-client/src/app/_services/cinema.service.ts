@@ -50,4 +50,7 @@ export class CinemaService {
   deleteAllByVendorID(vendorID: any): Observable<Cinema[]> {
     return this.http.delete<Cinema[]>(`${baseUrl}/VendorIDdel/vendorID?vendorID=${vendorID}`);
   }
+  getMarkerPositions(cinemaId: string): Observable<any> {
+    return this.http.get<any>(`${baseUrl}/marker-positions/${cinemaId}`);
+  }
 }

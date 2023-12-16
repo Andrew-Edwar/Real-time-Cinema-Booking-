@@ -28,6 +28,7 @@ module.exports = app => {
 
   // router.get("/byVendorID", cinemas.findByVendorID);
 
+
   app.use("/api/cinemas", router);
 };
 

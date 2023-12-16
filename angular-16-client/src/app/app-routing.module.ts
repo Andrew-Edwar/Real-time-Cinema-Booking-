@@ -15,6 +15,7 @@ import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
 import { AddCinemaComponent } from './add-cinema/add-cinema.component';
 import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
 import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-details-cust.component';
+import { MapMarkerComponent } from './map-marker/map-marker.component';
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'tutorialsCust', component: TutorialsListComponentCust },
   { path: 'tutorialsCust/:id', component: TutorialDetailsComponentCust },
   { path: 'tutorials/:id', component: TutorialDetailsComponent },
+  {path: 'map-marker', component: MapMarkerComponent},
   
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];

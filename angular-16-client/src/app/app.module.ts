@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
+import { GoogleMapsModule } from '@angular/google-maps'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -20,6 +20,8 @@ import { AddCinemaComponent } from './add-cinema/add-cinema.component';
 import { httpInterceptorProviders } from './_helpers/http.interceptor';
 import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-details-cust.component';
 import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
+import { MapMarker } from '@angular/google-maps';
+import { MapMarkerComponent } from './map-marker/map-marker.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,14 +38,16 @@ import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.co
     CinemasListComponent,
     TutorialDetailsComponentCust,
     TutorialsListComponentCust,
-    AddCinemaComponent
-
+    AddCinemaComponent,
+    MapMarkerComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule,
+    GoogleMapsModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

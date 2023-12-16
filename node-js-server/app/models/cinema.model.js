@@ -4,7 +4,13 @@ module.exports = mongoose => {
     {
       id:Number,
       name: String, 
-      vendorID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+      vendorID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      locations: [
+        {
+          latitude: Number,
+          longitude: Number,
+        },
+      ],
     },
     { timestamps: true }
   );
