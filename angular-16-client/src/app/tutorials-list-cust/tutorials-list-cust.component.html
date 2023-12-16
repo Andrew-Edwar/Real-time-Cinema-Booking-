@@ -1,4 +1,5 @@
-<div class="list row" >
+<!-- tutorials-list-cust.component.html -->
+<div class="list row">
   <div class="col-md-8">
     <div class="input-group mb-3">
       <input
@@ -19,7 +20,7 @@
     </div>
   </div>
   <div class="col-md-6">
-    <h4>Movies List</h4>
+    <h4>Tutorials List</h4>
     <ul class="list-group">
       <li
         class="list-group-item"
@@ -30,13 +31,30 @@
         {{ tutorial.title }}
       </li>
     </ul>
-
-
   </div>
+ <div class="col-md-6">
+    <h4>Vendors List</h4>
+    <!-- Dropdown for vendors with a placeholder -->
+    <select class="form-control" [(ngModel)]="selectedVendor" (change)="onVendorChange()">
+      <!-- Placeholder option -->
+      <option value="" disabled selected>Select a vendor</option>
+      <!-- Vendor options -->
+      <option *ngFor="let vendor of vendors; let i = index" [value]="vendor">
+        {{ vendor.username }}
+      </option>
+    </select>
+  </div>
+
   <div class="col-md-6">
     <app-tutorial-details-cust
       [viewMode]="true"
       [currentTutorial]="currentTutorial"
+    ></app-tutorial-details-cust>
+  </div>
+  <div class="col-md-6">
+    <app-tutorial-details-cust
+      [viewMode]="true"
+      [currentTutorial]="currentVendor"
     ></app-tutorial-details-cust>
   </div>
 </div>
