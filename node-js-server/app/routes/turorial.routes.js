@@ -14,6 +14,8 @@ module.exports = app => {
   // Retrieve all published Tutorials
   router.get("/published", tutorials.findAllPublished);
 
+  router.get("/published/vendorId", tutorials.findPublishedByVendorID);
+
   // Retrieve a single Tutorial with id
   router.get("/:id", tutorials.findOne);
 
@@ -27,6 +29,7 @@ module.exports = app => {
   router.delete("/", tutorials.deleteAll);
   
   router.delete("/VendorIDdel/vendorID", tutorials.deleteAllByVendorID);
+
   
   app.use("/api/tutorials", router);
 };

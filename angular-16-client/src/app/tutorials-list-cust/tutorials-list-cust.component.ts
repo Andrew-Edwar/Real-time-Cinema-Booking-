@@ -9,9 +9,10 @@ import { TutorialService } from 'src/app/_services/tutorial.service';
   templateUrl: './tutorials-list-cust.component.html',
   styleUrls: ['./tutorials-list-cust.component.css'],
 })
-export class TutorialsListComponentCust {
-   selectedVendor: any; // Add this property
+export class TutorialsListComponentCust implements OnInit {
+  selectedVendor: any;
   tutorials?: Tutorial[];
+  movies?: any[]; // Add property for movies
   vendors?: any[];
   currentTutorial: Tutorial = {};
   currentVendor: any = {};
@@ -25,24 +26,34 @@ export class TutorialsListComponentCust {
   ) {}
 
   ngOnInit(): void {
-    this.retrieveTutorials();
     this.retrieveVendors();
   }
 
   retrieveTutorials(): void {
-    this.tutorialService.getPublished().subscribe({
-      next: (data) => {
-        this.tutorials = data;
-        console.log(data);
-      },
-      error: (e) => console.error(e),
-    });
+    // Check if a vendor is selected
+    if (this.selectedVendor) {
+      console.log('vendor Id :',this.selectedVendor);
+      // Retrieve tutorials based on the selected vendor's ID
+      this.tutorialService.findPublishedByVendorID(this.selectedVendor).subscribe({
+        next: (data) => {
+          this.tutorials = data;
+          console.log(data);
+        },
+        error: (e) => console.error(e),
+      });
+      
+
+      // Retrieve movies based on the selected vendor's ID
+    }
   }
 
   retrieveVendors(): void {
     this.userService.getVendors().subscribe({
       next: (data) => {
         console.log('Vendors data:', data);
+        if (data && data.length > 0) {
+          console.log('First Vendor:', data[0]);
+        }
         this.vendors = data;
       },
       error: (e) => console.error('Error retrieving vendors:', e),
@@ -50,7 +61,6 @@ export class TutorialsListComponentCust {
   }
 
   refreshList(): void {
-    this.retrieveTutorials();
     this.retrieveVendors();
     this.currentTutorial = {};
     this.currentIndex = -1;
@@ -68,8 +78,7 @@ export class TutorialsListComponentCust {
   setActiveVendor(vendor: any, index: number): void {
     this.currentVendor = vendor;
     this.currentIndexVendor = index;
-    this.currentTutorial = {};
-    this.currentIndex = -1;
+    this.retrieveTutorials(); // Call retrieveTutorials when a vendor is selected
   }
 
   removeAllTutorials(): void {
@@ -94,11 +103,18 @@ export class TutorialsListComponentCust {
       error: (e) => console.error(e),
     });
   }
+
   onVendorChange() {
-    // Implement any logic you need when the vendor selection changes
-    // Access the selected vendor using this.selectedVendor.
-    // For example, you can set the currentVendor or perform other actions.
-    this.currentVendor = this.selectedVendor;
+    // Access the selected vendor's ID using this.selectedVendor
+    const selectedVendorId = this.selectedVendor;
+
+    // Now you can use the selectedVendorId as needed, for example:
+    console.log('Selected Vendor ID:', selectedVendorId);
+
+    // If you want to perform actions based on the selected vendor's ID, you can do that here.
+    // For example, you might want to load tutorials and movies associated with the selected vendor.
+    this.retrieveTutorials();
+
     // Reset the tutorial-related properties
     this.currentTutorial = {};
     this.currentIndex = -1;

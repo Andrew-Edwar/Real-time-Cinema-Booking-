@@ -51,4 +51,7 @@ export class TutorialService {
   deleteAllByVendorID(vendorID: any): Observable<Tutorial[]> {
     return this.http.delete<Tutorial[]>(`${baseUrl}/VendorIDdel/vendorID?vendorID=${vendorID}`);
   }
+  findPublishedByVendorID(vendorID: any): Observable<Tutorial[]> {
+    return this.http.get<Tutorial[]>(`${baseUrl}/published/vendorID?vendorID=${vendorID}`);
+  }
 }

@@ -20,6 +20,18 @@
     </div>
   </div>
   <div class="col-md-6">
+    <h4>Vendors List</h4>
+    <!-- Dropdown for vendors with a placeholder -->
+    <select class="form-control" [(ngModel)]="selectedVendor" (change)="onVendorChange()">
+      <!-- Placeholder option -->
+      <option value="" disabled selected>Select a vendor</option>
+      <!-- Vendor options using _id as the value -->
+      <option *ngFor="let vendor of vendors; let i = index" [value]="vendor._id">
+        {{ vendor.username }}
+      </option>
+    </select>
+  </div>
+  <div class="col-md-6">
     <h4>Tutorials List</h4>
     <ul class="list-group">
       <li
@@ -32,18 +44,7 @@
       </li>
     </ul>
   </div>
- <div class="col-md-6">
-    <h4>Vendors List</h4>
-    <!-- Dropdown for vendors with a placeholder -->
-    <select class="form-control" [(ngModel)]="selectedVendor" (change)="onVendorChange()">
-      <!-- Placeholder option -->
-      <option value="" disabled selected>Select a vendor</option>
-      <!-- Vendor options -->
-      <option *ngFor="let vendor of vendors; let i = index" [value]="vendor">
-        {{ vendor.username }}
-      </option>
-    </select>
-  </div>
+
 
   <div class="col-md-6">
     <app-tutorial-details-cust

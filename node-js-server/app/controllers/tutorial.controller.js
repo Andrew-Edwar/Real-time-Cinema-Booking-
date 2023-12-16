@@ -241,5 +241,18 @@ exports.findAllPublished = (req, res) => {
           err.message || "Some error occurred while retrieving tutorials."
       });
     });
-    
+  
+};
+exports.findPublishedByVendorID = (req, res) => {
+  const vendorID = req.query.vendorID;
+  Tutorial.find({ vendorID, published: true })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tutorials."
+      });
+    });
 };
