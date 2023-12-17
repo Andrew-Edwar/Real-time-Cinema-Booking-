@@ -1,0 +1,22 @@
+<!-- booking-details.component.html -->
+
+<div *ngIf="!submitted">
+  <!-- Your booking form here -->
+  <!-- You can customize this form based on your requirements -->
+  <label><strong>Customer ID:</strong></label>
+  {{ booking.CustomerID }}
+
+  <label><strong>Vendor ID:</strong></label>
+  <!-- {{ booking.vendorID }} -->
+
+  <!-- Add other form fields as needed -->
+
+  <button type="submit" class="badge badge-success mb-2" (click)="saveBooking()">
+    Submit
+  </button>
+</div>
+
+<div *ngIf="submitted">
+  <!-- Display a message or redirect to another page after submission -->
+  <p>Booking submitted successfully!</p>
+</div>

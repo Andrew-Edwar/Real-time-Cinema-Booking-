@@ -53,7 +53,7 @@
           <input
             type="checkbox"
             [value]="cinema.id"
-            (change)="cinemaCheckboxChanged(cinema.id)"
+            (change)="cinemaCheckboxChanged(cinema)"
             [checked]="isCinemaSelected(cinema)"
             />
           {{ cinema.name }}

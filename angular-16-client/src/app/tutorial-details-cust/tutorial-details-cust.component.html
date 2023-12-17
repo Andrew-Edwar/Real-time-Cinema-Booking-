@@ -1,4 +1,4 @@
-<div *ngIf="viewMode">
+<div *ngIf="viewMode; else editable">
   <div *ngIf="currentTutorial.id">
     <br>
     <h4>Movie</h4>
@@ -31,11 +31,39 @@
 
     <a class="badge badge-warning" 
     routerLink="/tutorialsCust/{{ currentTutorial.id }}"> 
-      Book </a>
+      book </a>
+
   </div>
 
   <div *ngIf="!currentTutorial">
     <br />
     <p>Please click on a Movie...</p>
+  </div>  
   </div>
-</div>
+
+  <!-- the booking section -->
+  <ng-template #editable>
+    <div>
+      <label for="showTimeDropdown"><strong>Select Show Time:</strong></label>
+      <select id="showTimeDropdown" class="form-control" [(ngModel)]="selectedShowTime" (change)="onShowTimeSelected()">
+        <option *ngFor="let showtime of currentTutorial.ShowTime; let i = index" [ngValue]="showtime">
+          Show Time {{ i + 1 }} Date: {{ showtime.date }} Start Time:{{ showtime.hours }} End Time: {{ showtime.endTime }}
+        </option>
+      </select>
+      
+    </div>
+    <div>
+      <label for="cinemaDropdown"><strong>Select Cinema:</strong></label>
+      <select id="cinemaDropdown" class="form-control" [(ngModel)]="selectedCinema">
+        <option *ngFor="let cinema of cinemas" [ngValue]="cinema" (click)="onCinemaSelected(cinema)">
+          {{ cinema.name }}
+        </option>
+      </select>
+    </div>
+    
+    <button type="submit" class="badge badge-success mb-2" (click)="saveBooking()">
+      Submit
+</button>
+
+
+  </ng-template>

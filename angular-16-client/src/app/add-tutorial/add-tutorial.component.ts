@@ -45,75 +45,95 @@ export class AddTutorialComponent implements OnInit {
     this.cinemaService.getAll().subscribe(
       (data) => {
         this.cinemas = data;
+
+        // Assuming currentTutorial has the cinema IDs, map them to the cinema objects
+        this.tutorial.cinemas = this.tutorial.cinemas?.map(cinemaId => {
+          return this.cinemas.find(cinema => cinema.id === cinemaId) || { id: cinemaId, name: 'Unknown Cinema' };
+        });
       },
       (error) => {
         console.error('Error loading cinemas:', error);
       }
     );
   }
-
   saveTutorial(): void {
-    let existingTutorials: Tutorial[];
+    this.titleExists = false;
+    this.movieTimeError = false;
+    this.oldShowTime = false;
+    this.hourError = false;
+
+    const currentUser = this.storageService.getUser();
+  
+    if (!currentUser) {
+      // Handle user not found
+      return;
+    }
+    console.log('Selected Cinemas:', this.tutorial.cinemas);
 
     this.tutorialService.getAll().subscribe((existingTutorials) => {
       const isExistingTitle = existingTutorials.some(
         (existingTutorial) => existingTutorial.title === this.tutorial.title
       );
-
-      if (
-        this.tutorial.ShowTime &&
-        this.tutorial.ShowTime.some(
-          (showtime) => {
-            const currentTime = new Date();
-            const minimumTime = new Date();
-            minimumTime.setHours(minimumTime.getHours() + 6);
-
-            const showTimeDate = new Date(showtime?.date + ' ' + showtime?.hours);
-            return showTimeDate < currentTime || showTimeDate < minimumTime;
-          }
-        )
-      ) {
-        console.log('Showtime should be at least 6 hours from the current time.');
-        this.hourError = true;
-        // Open the time error dialog
-
-        return;
-      }
-
+  
       if (isExistingTitle) {
-        this.titleExists = true; // Set error state to true
+        this.titleExists = true;
         return;
       }
-
+  
+      const currentTime = new Date();
+      const minimumTime = new Date();
+      minimumTime.setHours(minimumTime.getHours() + 6);
+  
+      const invalidShowTime = this.tutorial.ShowTime?.some((showtime) => {
+        const showTimeDate = new Date(
+          showtime?.date + ' ' + showtime?.hours
+        );
+        return showTimeDate < currentTime || showTimeDate < minimumTime;
+      });
+  
+      if (invalidShowTime) {
+        console.log(
+          'Showtime should be at least 6 hours from the current time.'
+        );
+        this.hourError = true;
+        return;
+      }
+  
       if (this.tutorial.MovieTime as number < 0 || this.tutorial.MovieTime as number > 240) {
-        console.log('Please enter a positive number for MovieTime and ensure it is less than or equal to 240.');
+        console.log(
+          'Please enter a positive number for MovieTime and ensure it is less than or equal to 240.'
+        );
         this.movieTimeError = true;
         return;
       }
-
+  
       const today = new Date().toISOString().split('T')[0];
-
+  
       if (
         this.tutorial.ShowTime &&
-        this.tutorial.ShowTime.some((showtime) => showtime?.date && showtime.date < today)
+        this.tutorial.ShowTime.some(
+          (showtime) => showtime?.date && showtime.date < today
+        )
       ) {
         console.log('Showtime date cannot be before today.');
         this.oldShowTime = true;
-        // Set any additional error flags or handle the error as needed
         return;
       }
-      const currentUser = this.storageService.getUser();
+      const selectedCinemas = (this.tutorial.cinemas || []).map((cinema) => cinema.id);
+
+  
       // Add cinemas to the data object
       const data = {
         title: this.tutorial.title,
         description: this.tutorial.description,
         MovieTime: this.tutorial.MovieTime,
         ShowTime: this.tutorial.ShowTime ?? [],
-        cinemas: this.tutorial.cinemas ?? [], // Include cinemas
-        vendorID:currentUser.id
+        cinemas: selectedCinemas ??[],
+        vendorID: currentUser.id
       };
+  
       console.log('Data to be saved:', data);
-
+  
       this.tutorialService.create(data).subscribe({
         next: (res) => {
           console.log('Tutorial saved successfully:', res);
@@ -121,29 +141,33 @@ export class AddTutorialComponent implements OnInit {
         },
         error: (e) => console.error('Error saving tutorial:', e),
       });
-
-      // Reset other error flags or perform any additional cleanup
-      this.titleExists = false;
-      this.movieTimeError = false;
-      this.oldShowTime = false;
-      this.hourError = false;
     });
   }
+  
+
+
+
+
+
+
+
+
+
+
   cinemaCheckboxChanged(cinema: Cinema): void {
+    console.log('Checkbox changed for cinema:', cinema);
     const isCinemaSelected = this.isCinemaSelected(cinema);
+    console.log('Is cinema selected?', isCinemaSelected);
+  
 
     if (isCinemaSelected) {
       // If cinema is selected, remove it
-      const cinemaIndex = this.tutorial.cinemas?.findIndex(c => c.id === cinema.id);
-      if (cinemaIndex !== undefined && cinemaIndex !== -1) {
-        this.tutorial.cinemas?.splice(cinemaIndex, 1);
-      }
+      this.tutorial.cinemas = (this.tutorial.cinemas || []).filter(c => c.id !== cinema.id);
     } else {
       // If cinema is not selected, add it
-      this.tutorial.cinemas?.push(cinema);
+      this.tutorial.cinemas = [...(this.tutorial.cinemas || []), cinema];
     }
   }
-  
   isCinemaSelected(cinema: Cinema): boolean {
     return this.tutorial.cinemas?.some((c) => c.id === cinema.id) ?? false;
   }

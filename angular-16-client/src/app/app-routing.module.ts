@@ -16,6 +16,7 @@ import { AddCinemaComponent } from './add-cinema/add-cinema.component';
 import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
 import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-details-cust.component';
 import { MapMarkerComponent } from './map-marker/map-marker.component';
+import { AddBookingComponent } from './add-booking/add-booking.component';
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
@@ -30,7 +31,7 @@ const routes: Routes = [
   { path: 'tutorialsCust/:id', component: TutorialDetailsComponentCust },
   { path: 'tutorials/:id', component: TutorialDetailsComponent },
   {path: 'map-marker', component: MapMarkerComponent},
-  
+  {path: 'addbooking/:id', component: AddBookingComponent},
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

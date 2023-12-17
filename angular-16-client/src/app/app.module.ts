@@ -16,6 +16,7 @@ import { TutorialsListComponent } from './tutorials-list/tutorials-list.componen
 import { CinemasListComponent } from './cinemas-list/cinemas-list.component';
 import { TutorialsListComponentCust } from './tutorials-list-cust/tutorials-list-cust.component';
 import { AddTutorialComponent } from './add-tutorial/add-tutorial.component';
+import { AddBookingComponent } from './add-booking/add-booking.component';
 import { AddCinemaComponent } from './add-cinema/add-cinema.component';
 import { httpInterceptorProviders } from './_helpers/http.interceptor';
 import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-details-cust.component';
@@ -39,7 +40,8 @@ import { MapMarkerComponent } from './map-marker/map-marker.component';
     TutorialDetailsComponentCust,
     TutorialsListComponentCust,
     AddCinemaComponent,
-    MapMarkerComponent
+    MapMarkerComponent,
+    AddBookingComponent
   ],
   imports: [
     BrowserModule,
