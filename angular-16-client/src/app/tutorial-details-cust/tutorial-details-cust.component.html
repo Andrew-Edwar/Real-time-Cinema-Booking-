@@ -51,11 +51,12 @@
   <ng-template #editable>
     <div>
       <label for="showTimeDropdown"><strong>Select Show Time:</strong></label>
-      <select id="showTimeDropdown" class="form-control" [(ngModel)]="selectedShowTime" (change)="onShowTimeSelected()">
+      <select id="showTimeDropdown" class="form-control" [(ngModel)]="selectedShowTime" (change)="onShowTimeSelected()" [ngModelOptions]="{standalone: true}">
         <option *ngFor="let showtime of currentTutorial.ShowTime; let i = index" [ngValue]="showtime">
           Show Time {{ i + 1 }} Date: {{ showtime.date }} Start Time:{{ showtime.hours }} End Time: {{ showtime.endTime }}
         </option>
       </select>
+      
       
     </div>
     <div>
@@ -107,9 +108,11 @@
 <p class="text">
   You have selected <span id="count">{{ selectedSeats.length }}</span> seats.<span id="total"></span>
 </p>
-    <button type="submit" class="badge badge-success mb-2" (click)="saveBooking()">
-      Submit
+<button type="submit" class="badge badge-success mb-2" (click)="saveBooking()">
+  Submit
 </button>
+
+
 
 
   </ng-template>

@@ -5,9 +5,8 @@ export class Tutorial {
   title?: string;
   description?: string;
   published?: boolean;
-  MovieTime?: Number;
-  ShowTime?: { date: String; hours: String ; endTime: String }[]=[];
+  MovieTime?: number;
+  ShowTime?: { date: string; hours: string; endTime: string; totalBookedSeats?: number; bookedSeats?: number[] }[] = [];
   cinemas?: Cinema[];
   vendorID?: any;
-
 }

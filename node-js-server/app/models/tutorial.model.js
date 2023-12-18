@@ -10,7 +10,9 @@ module.exports = mongoose => {
         {
           date: String , // change the type and default value to string
           hours: String,
-          endTime: String
+          endTime: String,
+          totalBookedSeats: Number,
+          bookesSeates: { type: [Number], default: [] }
         }
       ],
       cinemas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cinema' }],// Add this line

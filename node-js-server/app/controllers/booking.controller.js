@@ -24,9 +24,8 @@ exports.create = (req, res) => {
       date: req.body.ShowTime.date,
       hours: req.body.ShowTime.hours,
       endTime: req.body.ShowTime.endTime,
+      selectedSeats: req.body.ShowTime.selectedSeats // Add seats
     },
-    selectedSeats: req.body.selectedSeats // Add seats
-
   });
  
 

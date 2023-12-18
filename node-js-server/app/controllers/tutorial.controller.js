@@ -3,7 +3,7 @@ const Tutorial = db.tutorials;
 const admin = require('firebase-admin');
 
 // Path to your Firebase service account key JSON file
-const serviceAccount = require('../sw-2-313b8-firebase-adminsdk-uqhib-7b3dc51997.json');
+const serviceAccount = require('../../../sw-2-313b8-firebase-adminsdk-uqhib-7b3dc51997.json');
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -27,44 +27,34 @@ function sendFCMNotification(title, body, token) {
       console.error('Error sending notification:', error);
     });
 }
-// Define a function to calculate the end time by adding the hours and the movie time
+
 function calculateEndTime(hours, movieTime) {
   if (!hours || !movieTime) {
-    // Return an empty string if hours or movieTime is not provided
     return '';
   }
 
-  // Convert the hours and movie time to minutes
   var hoursInMinutes = parseInt(hours.split(':')[0]) * 60 + parseInt(hours.split(':')[1]);
   var movieTimeInMinutes = movieTime;
-  // Add the minutes and convert back to hours and minutes
   var totalMinutes = hoursInMinutes + movieTimeInMinutes;
   var endHours = Math.floor(totalMinutes / 60);
   var endMinutes = totalMinutes % 60;
-  // Format the end time as a string
   return ('0' + endHours).slice(-2) + ':' + ('0' + endMinutes).slice(-2);
 }
 
-
-
-
-
-// Create and Save a new Tutorial
 exports.create = (req, res) => {
-  // Validate request
   if (!req.body.title) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
 
-  // Convert date strings in ShowTime to Date objects
   const ShowTime = req.body.ShowTime.map(ShowTime => ({
     date: ShowTime.date,
     hours: ShowTime.hours,
-    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime) // Use the calculateEndTime function and the MovieTime property of the request body
+    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime),
+    totalBookedSeats: 0, // Initialize totalBookedSeats to 0
+    bookedSeats: [] // Initialize bookedSeats array to empty
   }));
 
-  // Create a Tutorial
   const tutorial = new Tutorial({
     title: req.body.title,
     description: req.body.description,
@@ -73,21 +63,17 @@ exports.create = (req, res) => {
     published: req.body.published ? req.body.published : false,
     cinemas: req.body.cinemas,
     vendorID: req.body.vendorID,
-
   });
 
-  // Save Tutorial in the database
   tutorial
     .save(tutorial)
     .then(data => {
-      // sendFCMNotification("New Tutorial Added!", `A new tutorial "${req.body.title}" has been added.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
+      sendFCMNotification("New Tutorial Added!", `A new tutorial "${req.body.title}" has been added.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
       res.send(data);
-
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Tutorial."
+        message: err.message || "Some error occurred while creating the Tutorial."
       });
     });
 };
@@ -151,17 +137,16 @@ exports.update = (req, res) => {
 
   const id = req.params.id;
 
-  // Recalculate the end time for each show time
   const ShowTime = req.body.ShowTime.map(ShowTime => ({
     date: ShowTime.date,
     hours: ShowTime.hours,
-    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime)
+    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime),
+    totalBookedSeats: ShowTime.totalBookedSeats || 0,
+    bookedSeats: ShowTime.bookedSeats || []
   }));
 
-  // Get the selected cinema IDs from the request body
   const selectedCinemas = req.body.cinemas || [];
 
-  // Find the existing tutorial
   Tutorial.findById(id)
     .then(existingTutorial => {
       if (!existingTutorial) {
@@ -171,24 +156,17 @@ exports.update = (req, res) => {
         return;
       }
 
-      // Update fields
       existingTutorial.title = req.body.title;
       existingTutorial.description = req.body.description;
       existingTutorial.MovieTime = req.body.MovieTime;
       existingTutorial.ShowTime = ShowTime;
-
-      // Set the tutorial's cinemas to the selected cinemas
       existingTutorial.cinemas = selectedCinemas;
-
-      // Update the published status
       existingTutorial.published = req.body.published;
 
-      // Save the updated tutorial
       existingTutorial.save()
         .then(data => {
           res.send({ message: "Tutorial was updated successfully.", data });
 
-          // Send FCM notification only if the tutorial is published
           if (req.body.published) {
             sendFCMNotification("New Tutorial Published!", `A new tutorial "${req.body.title}" has been published.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
           }

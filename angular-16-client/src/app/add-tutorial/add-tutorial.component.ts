@@ -19,7 +19,7 @@ export class AddTutorialComponent implements OnInit {
     ShowTime: [{ date: '', hours: '', endTime: '' }],
     published: false,
     cinemas: [], // Added cinemas property
-    vendorID:''
+    vendorID: '',
   }; 
   
   submitted = false;
@@ -28,7 +28,6 @@ export class AddTutorialComponent implements OnInit {
   oldShowTime = false;
   hourError = false;
 
-  
   cinemas: Cinema[] = [];
 
   constructor(
@@ -56,6 +55,7 @@ export class AddTutorialComponent implements OnInit {
       }
     );
   }
+
   saveTutorial(): void {
     this.titleExists = false;
     this.movieTimeError = false;
@@ -68,7 +68,6 @@ export class AddTutorialComponent implements OnInit {
       // Handle user not found
       return;
     }
-    console.log('Selected Cinemas:', this.tutorial.cinemas);
 
     this.tutorialService.getAll().subscribe((existingTutorials) => {
       const isExistingTitle = existingTutorials.some(
@@ -120,7 +119,6 @@ export class AddTutorialComponent implements OnInit {
         return;
       }
       const selectedCinemas = (this.tutorial.cinemas || []).map((cinema) => cinema.id);
-
   
       // Add cinemas to the data object
       const data = {
@@ -143,16 +141,6 @@ export class AddTutorialComponent implements OnInit {
       });
     });
   }
-  
-
-
-
-
-
-
-
-
-
 
   cinemaCheckboxChanged(cinema: Cinema): void {
     console.log('Checkbox changed for cinema:', cinema);
@@ -168,16 +156,12 @@ export class AddTutorialComponent implements OnInit {
       this.tutorial.cinemas = [...(this.tutorial.cinemas || []), cinema];
     }
   }
+
   isCinemaSelected(cinema: Cinema): boolean {
     return this.tutorial.cinemas?.some((c) => c.id === cinema.id) ?? false;
   }
   
   // Existing methods...
-
-  // Note: Ensure that the HTML template is updated accordingly with the changes.
-
-
-
 
   addShowTime() {
     this.tutorial.ShowTime = this.tutorial.ShowTime ?? [];
@@ -210,6 +194,4 @@ export class AddTutorialComponent implements OnInit {
     const day = today.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
- 
-  
 }

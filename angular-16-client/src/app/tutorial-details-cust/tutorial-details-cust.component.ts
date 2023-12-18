@@ -19,6 +19,7 @@ export class TutorialDetailsComponentCust implements OnInit {
   selectedSeats: number[] = [];
   movieSelect: any;
 
+
   // Function to toggle seat selection
   toggleSeatSelection(event: any, rowIndex: number, seatIndex: number): void {
     const target = event.target;
@@ -79,10 +80,10 @@ export class TutorialDetailsComponentCust implements OnInit {
   booking: Booking = {
     CustomerID: '',
     MovieID: '',
-    ShowTime:{date:'',hours:'',endTime:''},
+    ShowTime:{date:'',hours:'',endTime:'',selectedSeats:[]},
     vendorID:'',
     cinemaID:'',
-    selectedSeats:[]
+    
   };
 
   @Input() currentTutorial: Tutorial = {
@@ -94,7 +95,8 @@ export class TutorialDetailsComponentCust implements OnInit {
     
   };
 
-  selectedShowTime: any = { date: '', hours: '', endTime: '' };
+  selectedShowTime: any = { date: '', hours: '', endTime: '', selectedSeats: [] };
+
 
 
   message = '';
@@ -161,20 +163,21 @@ export class TutorialDetailsComponentCust implements OnInit {
       this.getSeatNumber(Math.floor(seatIndex / 8), seatIndex % 8)
     );
   
-    const data = {
+    const data: Booking = {
       CustomerID: currentUser.id,
       MovieID: this.currentTutorial.id,
       ShowTime: {
         date: date,
         hours: hours,
-        endTime: endTime
+        endTime: endTime,
+        selectedSeats: selectedSeatsNumbers,
       },
       vendorID: this.currentTutorial.vendorID,
       cinemaID: this.selectedCinema.id,
-      selectedSeats: selectedSeatsNumbers, // Include the selected seats array with seat numbers
-      selectedMovieIndex: selectedMovieIndex, // Include the selected movie index
+      selectedMovieIndex: selectedMovieIndex,
       selectedMovieValue: selectedMovieValue,
     };
+
   
     console.log('Data to be saved:', data);
   
