@@ -11,8 +11,10 @@ module.exports = mongoose => {
           date: String , // change the type and default value to string
           hours: String,
           endTime: String
-        }
-     
+        },
+        selectedSeats: { type: [Number], default: [] },  // Array to store selected seat indices
+        selectedMovieIndex: { type: Number },  // Index of the selected movie
+        selectedMovieValue: { type: String } 
     },
     { timestamps: true }
   );

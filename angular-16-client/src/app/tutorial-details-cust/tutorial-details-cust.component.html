@@ -1,3 +1,9 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="tutorial-details-cust.component.css" />
+</head>
 <div *ngIf="viewMode; else editable">
   <div *ngIf="currentTutorial.id">
     <br>
@@ -60,7 +66,47 @@
         </option>
       </select>
     </div>
-    
+    <div >
+      <select id="movie">
+        <option >
+       
+        </option>
+      </select>
+    </div>
+<div class="body">
+    <ul class="showcase">
+      <li>
+        <div class="seat"></div>
+        <small>Available</small>
+      </li>
+      <li>
+        <div class="seat selected"></div>
+        <small>Selected</small>
+      </li>
+      <li>
+        <div class="seat sold"></div>
+        <small>Sold</small>
+      </li>
+    </ul>
+    <div class="container">
+      <div class="screen"></div>
+  
+      <div class="row" *ngFor="let row of [1, 2, 3, 4, 5, 6]; let rowIndex = index">
+        <div
+          class="seat"
+          (click)="toggleSeatSelection($event, rowIndex, seatIndex)"
+          *ngFor="let seat of [1, 2, 3, 4, 5, 6, 7, 8]; let seatIndex = index"
+        >
+          {{ getSeatNumber(rowIndex, seatIndex) }}
+        </div>
+      </div>
+      
+
+    </div>
+</div>
+<p class="text">
+  You have selected <span id="count">{{ selectedSeats.length }}</span> seats.<span id="total"></span>
+</p>
     <button type="submit" class="badge badge-success mb-2" (click)="saveBooking()">
       Submit
 </button>

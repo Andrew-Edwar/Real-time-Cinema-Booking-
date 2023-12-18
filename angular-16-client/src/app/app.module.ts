@@ -41,7 +41,7 @@ import { MapMarkerComponent } from './map-marker/map-marker.component';
     TutorialsListComponentCust,
     AddCinemaComponent,
     MapMarkerComponent,
-    AddBookingComponent
+    AddBookingComponent,
   ],
   imports: [
     BrowserModule,
