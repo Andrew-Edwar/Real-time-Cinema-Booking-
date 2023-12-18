@@ -19,6 +19,18 @@
       </div>
     </div>
   </div>
+ 
+<div class="col-md-4"> 
+<h4>Notifications</h4>
+<div *ngIf="message;">
+  <b>{{ message.notification.title }}</b>
+  {{ message.notification.body }}
+</div>
+<div *ngIf="!message;">
+  No Message Arrived
+</div>
+</div>
+
 
     <div class="col-md-8">
     <h4>Vendors List</h4>
@@ -59,4 +71,6 @@
       [currentTutorial]="currentVendor"
     ></app-tutorial-details-cust>
   </div>
+
 </div>
+

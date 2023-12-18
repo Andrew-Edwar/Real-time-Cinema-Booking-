@@ -1,7 +1,32 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
+const admin = require('firebase-admin');
 
+// Path to your Firebase service account key JSON file
+const serviceAccount = require('../sw-2-313b8-firebase-adminsdk-uqhib-7b3dc51997.json');
 
+// Initialize Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+function sendFCMNotification(title, body, token) {
+  const message = {
+    notification: {
+      title: title,
+      body: body,
+    },
+    token: token,
+  };
+
+  admin.messaging().send(message)
+    .then(response => {
+      console.log('Notification sent successfully:', response);
+    })
+    .catch(error => {
+      console.error('Error sending notification:', error);
+    });
+}
 // Define a function to calculate the end time by adding the hours and the movie time
 function calculateEndTime(hours, movieTime) {
   if (!hours || !movieTime) {
@@ -55,7 +80,9 @@ exports.create = (req, res) => {
   tutorial
     .save(tutorial)
     .then(data => {
+      // sendFCMNotification("New Tutorial Added!", `A new tutorial "${req.body.title}" has been added.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
       res.send(data);
+
     })
     .catch(err => {
       res.status(500).send({
@@ -146,22 +173,25 @@ exports.update = (req, res) => {
 
       // Update fields
       existingTutorial.title = req.body.title;
-  existingTutorial.description = req.body.description;
-  existingTutorial.MovieTime = req.body.MovieTime;
-  existingTutorial.ShowTime = ShowTime;
-
-  // Set the tutorial's cinemas to the selected cinemas
-  existingTutorial.cinemas = selectedCinemas;
-
-  // Update the published status
-  existingTutorial.published = req.body.published;
+      existingTutorial.description = req.body.description;
+      existingTutorial.MovieTime = req.body.MovieTime;
+      existingTutorial.ShowTime = ShowTime;
 
       // Set the tutorial's cinemas to the selected cinemas
+      existingTutorial.cinemas = selectedCinemas;
+
+      // Update the published status
+      existingTutorial.published = req.body.published;
 
       // Save the updated tutorial
       existingTutorial.save()
         .then(data => {
           res.send({ message: "Tutorial was updated successfully.", data });
+
+          // Send FCM notification only if the tutorial is published
+          if (req.body.published) {
+            sendFCMNotification("New Tutorial Published!", `A new tutorial "${req.body.title}" has been published.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
+          }
         })
         .catch(err => {
           res.status(500).send({
@@ -175,6 +205,7 @@ exports.update = (req, res) => {
       });
     });
 };
+
 // Delete a Tutorial with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;

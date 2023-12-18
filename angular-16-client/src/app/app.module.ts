@@ -23,6 +23,10 @@ import { TutorialDetailsComponentCust } from './tutorial-details-cust/tutorial-d
 import { TutorialDetailsComponent } from './tutorial-details/tutorial-details.component';
 import { MapMarker } from '@angular/google-maps';
 import { MapMarkerComponent } from './map-marker/map-marker.component';
+import { environment } from "../environments/environment";
+import { initializeApp } from "firebase/app";
+initializeApp(environment.firebase);
+
 @NgModule({
   declarations: [
     AppComponent,
