@@ -23,6 +23,7 @@ export class CinemaService {
   get(id: any): Observable<Cinema> {
     return this.http.get<Cinema>(`${baseUrl}/${id}`);
   }
+  
 
   create(data: any): Observable<any> {
     return this.http.post(baseUrl, data);

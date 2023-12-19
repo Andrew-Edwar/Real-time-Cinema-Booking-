@@ -115,14 +115,14 @@ export class TutorialDetailsComponent {
 
   updateTutorial(): void {
     this.message = '';
-if (
+    if (
       this.currentTutorial.ShowTime &&
       this.currentTutorial.ShowTime.some(
         (showtime) => {
           const currentTime = new Date();
           const minimumTime = new Date();
           minimumTime.setHours(minimumTime.getHours() + 6);
-
+  
           const showTimeDate = new Date(showtime?.date + ' ' + showtime?.hours);
           return showTimeDate < currentTime || showTimeDate < minimumTime;
         }
@@ -130,8 +130,6 @@ if (
     ) {
       console.log('Showtime should be at least 6 hours from the current time.');
       this.hourError = true;
-      // Open the time error dialog
-
       return;
     }
     const today = new Date().toISOString().split('T')[0];
@@ -141,7 +139,6 @@ if (
     ) {
       console.log('Showtime date cannot be before today.');
       this.oldShowTime = true;
-      // Set any additional error flags or handle the error as needed
       return;
     }
     if (this.currentTutorial.MovieTime as number < 0 || this.currentTutorial.MovieTime as number > 240) {
@@ -149,38 +146,45 @@ if (
       this.movieTimeError = true;
       return;
     }
+  
+    // Ensure currentTutorial.cinemas is initialized as an array
+    this.currentTutorial.cinemas = this.currentTutorial.cinemas || [];
+  
+    // Get the IDs of the selected cinemas
+    const selectedCinemaIds = this.currentTutorial.cinemas.map((cinema) => cinema.id);
+  
+    // Merge the existing cinemas with the selected cinemas
+    const mergedCinemas = [
+      ...this.cinemas.filter((cinema) => selectedCinemaIds.includes(cinema.id)),
+      ...this.cinemas.filter((cinema) => !selectedCinemaIds.includes(cinema.id)),
+    ];
+  
     const data = {
       title: this.currentTutorial.title,
       description: this.currentTutorial.description,
       ShowTime: this.currentTutorial.ShowTime,
       MovieTime: this.currentTutorial.MovieTime,
       published: this.currentTutorial.published,
-      cinemas: this.currentTutorial.cinemas?.map((cinema) => cinema.id),
+      cinemas: mergedCinemas.map((cinema) => cinema.id),
     };
-    this.tutorialService.getAll().subscribe((existingTutorials) => {
-      const isExistingTitle = existingTutorials.some(
-        (existingTutorial) => existingTutorial.title === this.currentTutorial.title
-      );
-      if (isExistingTitle) {
-        this.titleExists = true; // Set error state to true
-        return;
-      }})
-
+  
+    this.message = '';
+  
     this.tutorialService.update(this.currentTutorial.id, data).subscribe({
-      
       next: (res) => {
         console.log(res);
         this.message = res.message ? res.message : 'This tutorial was updated successfully!';
       },
       error: (e) => console.error(e),
     });
-    
-   this. hourError = false;
-   this.  oldShowTime = false;
-   this.movieTimeError=false;
-   this.titleExists=false;
-
+  
+    this.hourError = false;
+    this.oldShowTime = false;
+    this.movieTimeError = false;
+    this.titleExists = false;
   }
+  
+ 
 
   getSelectedCinemaIds(): number[] {
     return this.currentTutorial.cinemas?.map(c => c.id) ?? [];

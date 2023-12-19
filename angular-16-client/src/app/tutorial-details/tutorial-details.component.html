@@ -23,6 +23,7 @@
         <label><strong> Date:</strong> {{ showtime.date }}</label><br>
         <label><strong> Start Time:</strong> {{ showtime.hours }}</label><br>
         <label><strong> End Time:</strong> {{ showtime.endTime }}</label>
+
       </li>
       </ul>
     </div>
@@ -30,7 +31,17 @@
       <label><strong>Status:</strong></label>
       {{ currentTutorial.published ? "Published" : "Pending" }}
     </div>
+    <!-- <div>
 
+      <label><strong>Cinemas:</strong></label>
+      <div *ngFor="let cinema of cinemastutorial">      <li
+          class="list-group-item"
+          
+        >
+      {{ cinema.name }}
+      </li>
+      </div>
+    </div> -->
     <a class="badge badge-warning" *ngIf="!currentTutorial.published"
     routerLink="/tutorials/{{ currentTutorial.id }}"> 
       Edit </a>
