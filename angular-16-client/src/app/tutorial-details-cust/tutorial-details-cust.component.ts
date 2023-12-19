@@ -260,8 +260,21 @@ export class TutorialDetailsComponentCust implements OnInit {
     }
   }
 
+  isSeatSold(row: number, seat: number): boolean {
+    const seatNumber = this.getSeatNumber(row, seat) ;
+    const selectedShowTime = this.getSelectedShowTime(); // Implement this method to get the selected showtime
+    return selectedShowTime?.bookedSeats?.includes(seatNumber) || false;
+  }
+  
+  getSelectedShowTime(): any {
+    // Implement this method to get the selected showtime based on your logic
+    return this.currentTutorial.ShowTime?.find(
+      (showTime) =>
+        showTime.date === this.selectedShowTime.date &&
+        showTime.hours === this.selectedShowTime.hours &&
+        showTime.endTime === this.selectedShowTime.endTime
+    );
+  }
   
   
 }
-
-

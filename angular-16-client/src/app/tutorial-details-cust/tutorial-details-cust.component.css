@@ -56,7 +56,7 @@
 }
 
 .seat.sold {
-  background-color: #fff;
+  background-color: #ff0000;
 }
 
 .seat:nth-of-type(2) {
