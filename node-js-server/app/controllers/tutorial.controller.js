@@ -68,7 +68,7 @@ exports.create = (req, res) => {
   tutorial
     .save(tutorial)
     .then(data => {
-      sendFCMNotification("New Tutorial Added!", `A new tutorial "${req.body.title}" has been added.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
+      // sendFCMNotification("New Tutorial Added!", `A new tutorial "${req.body.title}" has been added.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
       res.send(data);
     })
     .catch(err => {

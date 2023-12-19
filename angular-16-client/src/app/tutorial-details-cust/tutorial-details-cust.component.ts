@@ -90,7 +90,8 @@ export class TutorialDetailsComponentCust implements OnInit {
     title: '',
     description: '',
     MovieTime: 0,
-    ShowTime: [{ date: '', hours: '', endTime: '' }],
+    ShowTime: [{ date: '', hours: '', endTime: '' ,    totalBookedSeats: 0, // Initialize with the total booked seats
+    bookedSeats: []}],
     published: true,
     
   };
@@ -163,6 +164,27 @@ export class TutorialDetailsComponentCust implements OnInit {
       this.getSeatNumber(Math.floor(seatIndex / 8), seatIndex % 8)
     );
   
+    // Find the corresponding ShowTime in currentTutorial and add the new booked seats
+    const selectedShowTime = this.currentTutorial.ShowTime?.find(
+      showTime => showTime.date === date && showTime.hours === hours && showTime.endTime === endTime
+    );
+  
+    if (selectedShowTime) {
+      // Add the new booked seats to the existing ones
+      selectedShowTime.totalBookedSeats = (selectedShowTime.totalBookedSeats || 0) + selectedSeatsNumbers.length;
+      selectedShowTime.bookedSeats = (selectedShowTime.bookedSeats || []).concat(selectedSeatsNumbers);
+    } else {
+      // Create a new ShowTime entry if it doesn't exist
+      const newShowTimeEntry = {
+        date: date,
+        hours: hours,
+        endTime: endTime,
+        totalBookedSeats: selectedSeatsNumbers.length,
+        bookedSeats: selectedSeatsNumbers,
+      };
+      this.currentTutorial.ShowTime?.push(newShowTimeEntry);
+    }
+  
     const data: Booking = {
       CustomerID: currentUser.id,
       MovieID: this.currentTutorial.id,
@@ -177,10 +199,18 @@ export class TutorialDetailsComponentCust implements OnInit {
       selectedMovieIndex: selectedMovieIndex,
       selectedMovieValue: selectedMovieValue,
     };
-
   
     console.log('Data to be saved:', data);
   
+    // Update the Tutorial in the database
+    this.tutorialService.update(this.currentTutorial.id, this.currentTutorial).subscribe({
+      next: (res) => {
+        console.log('Tutorial updated successfully:', res);
+      },
+      error: (e) => console.error('Error updating tutorial:', e),
+    });
+  
+    // Create the Booking in the database
     this.bookingService.create(data).subscribe({
       next: (res) => {
         console.log('Booking saved successfully:', res);
@@ -189,6 +219,8 @@ export class TutorialDetailsComponentCust implements OnInit {
       error: (e) => console.error('Error saving booking:', e),
     });
   }
+  
+  
 
   newBooking(): void {
     this.submitted = false;

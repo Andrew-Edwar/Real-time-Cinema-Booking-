@@ -12,7 +12,7 @@ module.exports = mongoose => {
           hours: String,
           endTime: String,
           totalBookedSeats: Number,
-          bookesSeates: { type: [Number], default: [] }
+          bookedSeats: { type: [Number], default: [] }
         }
       ],
       cinemas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cinema' }],// Add this line

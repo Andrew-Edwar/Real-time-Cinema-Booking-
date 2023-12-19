@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Tutorial } from 'src/app/models/tutorial.model';
 import { UserService } from 'src/app/_services/user.service';
 import { TutorialService } from 'src/app/_services/tutorial.service';
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { environment } from "src/environments/environment";
+// import { getMessaging, getToken, onMessage } from "firebase/messaging";
+// import { environment } from "src/environments/environment";
 
 @Component({
   selector: 'app-tutorials-list',
@@ -22,7 +22,7 @@ export class TutorialsListComponentCust implements OnInit {
   currentIndexVendor = -1;
   title = '';
  
-  message:any = null;
+  // message:any = null;
   constructor(
     private tutorialService: TutorialService,
     private userService: UserService
@@ -30,38 +30,38 @@ export class TutorialsListComponentCust implements OnInit {
 
   ngOnInit(): void {
     this.retrieveVendors();
-    this.requestPermission();
-     this.listen();
+    // this.requestPermission();
+    //  this.listen();
   }
 
   
-  requestPermission() {
+  // requestPermission() {
 
-    const messaging = getMessaging();
+  //   const messaging = getMessaging();
 
-    getToken(messaging, { vapidKey: environment.firebase.vapidKey }).then((currentToken) => {
-      if (currentToken) {
-        console.log("token",currentToken)
-        // Send the token to your server and update the UI if necessary
-        // ...
-      } else {
-        // Show permission request UI
-        console.log('No registration token available. Request permission to generate one.');
-        // ...
-      }
-    }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err);
-      // ...
-    });
+  //   getToken(messaging, { vapidKey: environment.firebase.vapidKey }).then((currentToken) => {
+  //     if (currentToken) {
+  //       console.log("token",currentToken)
+  //       // Send the token to your server and update the UI if necessary
+  //       // ...
+  //     } else {
+  //       // Show permission request UI
+  //       console.log('No registration token available. Request permission to generate one.');
+  //       // ...
+  //     }
+  //   }).catch((err) => {
+  //     console.log('An error occurred while retrieving token. ', err);
+  //     // ...
+  //   });
 
-  }
-  listen() {
-    const messaging = getMessaging();
-    onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
-      this.message=payload;
-    });
-  }
+  // }
+  // listen() {
+  //   const messaging = getMessaging();
+  //   onMessage(messaging, (payload) => {
+  //     console.log('Message received. ', payload);
+  //     this.message=payload;
+  //   });
+  // }
 
   retrieveTutorials(): void {
     // Check if a vendor is selected
