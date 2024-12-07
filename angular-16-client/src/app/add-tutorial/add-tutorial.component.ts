@@ -37,25 +37,37 @@ export class AddTutorialComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCinemas();
+    this.loadCinemasByVendorID();
   }
 
-  loadCinemas(): void {
-    this.cinemaService.getAll().subscribe(
+  loadCinemasByVendorID(): void {
+    const currentUser = this.storageService.getUser();
+    if (!currentUser || !currentUser.id) {
+      console.error('Error: User not found or vendor ID missing.');
+      return;
+    }
+
+    const vendorID = currentUser.id; // Get vendor ID from the logged-in user
+    this.cinemaService.findByVendorID(vendorID).subscribe(
       (data) => {
         this.cinemas = data;
+        console.log('Cinemas loaded for vendor:', this.cinemas);
 
-        // Assuming currentTutorial has the cinema IDs, map them to the cinema objects
-        this.tutorial.cinemas = this.tutorial.cinemas?.map(cinemaId => {
-          return this.cinemas.find(cinema => cinema.id === cinemaId) || { id: cinemaId, name: 'Unknown Cinema' };
+        // Map cinema IDs in the tutorial to their full objects
+        this.tutorial.cinemas = this.tutorial.cinemas?.map((cinemaId) => {
+          return (
+            this.cinemas.find((cinema) => cinema.id === cinemaId) || {
+              id: cinemaId,
+              name: 'Unknown Cinema',
+            }
+          );
         });
       },
       (error) => {
-        console.error('Error loading cinemas:', error);
+        console.error('Error loading cinemas for vendor:', error);
       }
     );
   }
-
   saveTutorial(): void {
     this.titleExists = false;
     this.movieTimeError = false;

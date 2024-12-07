@@ -1,5 +1,6 @@
 const db = require("../models");
 const Booking= db.Bookings
+const firebaseFunctions = require('../services/firebaseFunctions')
 
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
@@ -34,6 +35,9 @@ exports.create = (req, res) => {
     .save(booking)
     .then(data => {
       res.send(data);
+      firebaseFunctions.sendFCMNotification("A New Booking Was Added !", `with Seats "${req.body.ShowTime.selectedSeats}".`, 
+            'dUdlXzng_UnRsrhHoV8zFv:APA91bHcEYl3LeUZ79h027y2NBpSHi7b5yVleG8ElHZ9hne_WvjsBIjVYhfmc7uB0QYSJ0vSKAOv6_ou0ZWvWI1HNJeC23PoYqF9ZSLpqdYFA8cgu-R_lZbpJJfj9Wdx7-QKYXWN5bzf');
+          
     })
     .catch(err => {
       res.status(500).send({

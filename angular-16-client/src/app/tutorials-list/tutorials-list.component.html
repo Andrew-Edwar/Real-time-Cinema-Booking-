@@ -23,6 +23,7 @@
     <h4>Notifications</h4>
     <div *ngIf="message;">
       <b>{{ message.notification.title }}</b>
+      <br>
       {{ message.notification.body }}
     </div>
     <div *ngIf="!message;">

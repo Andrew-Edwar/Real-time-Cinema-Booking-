@@ -1,32 +1,35 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
 const admin = require('firebase-admin');
+const firebaseFunctions = require('../services/firebaseFunctions')
+const redisClient = require('../config/redis.config'); // Adjust path as needed
+
 
 // Path to your Firebase service account key JSON file
-const serviceAccount = require('../../../sw-2-313b8-firebase-adminsdk-uqhib-7b3dc51997.json');
+// const serviceAccount = require('../../../sw-2-313b8-firebase-adminsdk-uqhib-7b3dc51997.json');
 
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// // Initialize Firebase Admin SDK
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
-function sendFCMNotification(title, body, token) {
-  const message = {
-    notification: {
-      title: title,
-      body: body,
-    },
-    token: token,
-  };
+// function sendFCMNotification(title, body, token) {
+//   const message = {
+//     notification: {
+//       title: title,
+//       body: body,
+//     },
+//     token: token,
+//   };
 
-  admin.messaging().send(message)
-    .then(response => {
-      console.log('Notification sent successfully:', response);
-    })
-    .catch(error => {
-      console.error('Error sending notification:', error);
-    });
-}
+//   admin.messaging().send(message)
+//     .then(response => {
+//       console.log('Notification sent successfully:', response);
+//     })
+//     .catch(error => {
+//       console.error('Error sending notification:', error);
+//     });
+// }
 
 function calculateEndTime(hours, movieTime) {
   if (!hours || !movieTime) {
@@ -168,7 +171,8 @@ exports.update = (req, res) => {
           res.send({ message: "Tutorial was updated successfully.", data });
 
           if (req.body.published) {
-            sendFCMNotification("New Tutorial Published!", `A new tutorial "${req.body.title}" has been published.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
+            firebaseFunctions.sendFCMNotification("New Tutorial Published!", `A new tutorial "${req.body.title}" has been published.`, 
+            'egqdV8IgY6vpZQLpsgmQoN:APA91bGDMsEm-goUEd1LLDangcHIttoJ9j5ZSvXaWsipr1-uBib5rdD9nYI-26imS-m2m2S88O1KcvfXdD3yPVsW2MZ3Jdti415gh_f9Ck_QKLryJs0SrnCzbEHhVdBbrRaRx72vBxyx');
           }
         })
         .catch(err => {
@@ -252,16 +256,40 @@ exports.findAllPublished = (req, res) => {
     });
   
 };
-exports.findPublishedByVendorID = (req, res) => {
+exports.findPublishedByVendorID = async (req, res) => {
   const vendorID = req.query.vendorID;
-  Tutorial.find({ vendorID, published: true })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving tutorials."
-      });
+
+  if (!vendorID) {
+    return res.status(400).send({ message: 'Vendor ID is required.' });
+  }
+
+  try {
+    // Step 1: Check Redis Cache
+    const cacheKey = `published-tutorials:${vendorID}`;
+    const cachedData = await redisClient.get(cacheKey); // Waits until Redis operation is complete
+
+    if (cachedData) {
+      console.log('Cache hit');
+      return res.send(JSON.parse(cachedData));
+    }
+
+    // Step 2: Fetch Data from MongoDB
+    console.log('Cache miss');
+    const tutorials = await Tutorial.find({ vendorID, published: true });
+
+    if (tutorials.length === 0) {
+      return res.status(404).send({ message: 'No published tutorials found for this vendor.' });
+    }
+
+    // Step 3: Save Result to Cache with Expiration (e.g., 1 hour)
+    await redisClient.set(cacheKey, JSON.stringify(tutorials), {
+      EX: 3600, // Cache expires in 1 hour
     });
+
+    // Step 4: Return Data
+    res.send(tutorials);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send({ message: 'An error occurred while retrieving tutorials.' });
+  }
 };

@@ -47,20 +47,35 @@ exports.findAll = (req, res) => {
     });
 };
 exports.findAllByVendorID = (req, res) => {
+  // Get vendorID from the query parameters
   const vendorID = req.query.vendorID;
-  var condition = vendorID ? { vendorID  } : {};
 
-  Cinema.find(condition)
-    .then(data => {
-      res.send(data);
+  // Validate that vendorID is provided
+  if (!vendorID) {
+    res.status(400).send({
+      message: "VendorID is required to retrieve cinemas.",
+    });
+    return;
+  }
+
+  // Find cinemas by vendorID
+  Cinema.find({ vendorID })
+    .then((data) => {
+      if (data.length === 0) {
+        res.status(404).send({
+          message: `No cinemas found for vendorID: ${vendorID}`,
+        });
+      } else {
+        res.send(data);
+      }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving cinemas."
+        message: err.message || "Some error occurred while retrieving cinemas.",
       });
     });
 };
+
 
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {

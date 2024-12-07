@@ -118,19 +118,33 @@ export class TutorialDetailsComponentCust implements OnInit {
   loadCinemas(): void {
     this.cinemaService.getAll().subscribe(
       (data) => {
-        this.cinemas = data;
-        console.error('all data cinemas:', data);
+        console.log('All cinemas data:', data);
         // Assuming currentTutorial has an array of cinema IDs
         if (this.currentTutorial && this.currentTutorial.cinemas) {
-          this.cinemas = this.cinemas.filter(cinema => this.currentTutorial.cinemas?.includes(cinema.id));
+          // Create an empty array to store the cinemas by ID
+          const cinemaIds = this.currentTutorial.cinemas;
+          this.cinemas = [];
+  
+          // Loop through each cinema ID and fetch the cinema details
+          cinemaIds.forEach(cinemaId => {
+            this.cinemaService.get(cinemaId).subscribe(
+              (cinema) => {
+                console.log('Fetched cinema:', cinema);
+                this.cinemas.push(cinema);  // Add the fetched cinema to the array
+              },
+              (error) => {
+                console.error('Error loading cinema by ID:', error);
+              }
+            );
+          });
         }
-        console.error('data cinemas filtered:', this.cinemas);
       },
       (error) => {
         console.error('Error loading cinemas:', error);
       }
     );
   }
+  
 
   selectedCinema: Cinema | undefined;
   onCinemaSelected(cinema: Cinema): void {
