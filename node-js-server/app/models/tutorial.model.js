@@ -8,14 +8,15 @@ module.exports = mongoose => {
       MovieTime: Number,
       ShowTime: [
         {
-          date: String , // change the type and default value to string
+          date: String, // Already a string
           hours: String,
           endTime: String,
           totalBookedSeats: Number,
-          bookedSeats: { type: [Number], default: [] }
+          bookedSeats: { type: [Number], default: [] },
+          cinema: { type: mongoose.Schema.Types.ObjectId, ref: 'cinema' } // Associate showtime with a cinema
         }
-      ],
-      cinemas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cinema' }],// Add this line
+      ]
+      ,
       vendorID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }// Add this line
       
 

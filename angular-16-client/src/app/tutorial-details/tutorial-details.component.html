@@ -22,8 +22,10 @@
         <label><strong>Show Time {{ i + 1 }}:</strong></label><br>
         <label><strong> Date:</strong> {{ showtime.date }}</label><br>
         <label><strong> Start Time:</strong> {{ showtime.hours }}</label><br>
-        <label><strong> End Time:</strong> {{ showtime.endTime }}</label>
-
+        <label><strong> End Time:</strong> {{ showtime.endTime }}</label><br>
+        <label><strong> The Cinema:</strong> 
+          {{ getCinemaName(showtime.cinema) }}
+        </label>
       </li>
       </ul>
     </div>
@@ -31,6 +33,10 @@
       <label><strong>Status:</strong></label>
       {{ currentTutorial.published ? "Published" : "Pending" }}
     </div>
+
+
+      
+    
     <!-- <div>
 
       <label><strong>Cinemas:</strong></label>
@@ -96,7 +102,9 @@
         <label><strong>Status:</strong></label>
         {{ currentTutorial.published ? "Published" : "Pending" }}
       </div>
+      
     </form>
+
     <!-- Inside the editable template -->
   
 
@@ -117,11 +125,21 @@
             <label for="time">Time:</label>
             <input class="form-control" type="time" [(ngModel)]="showTime.hours" name="time" />
           </div>
+
+          <div class="form-group">
+            <label for="cinema{{ i }}">Associated Cinema</label>
+            <select class="form-control" [(ngModel)]="showTime.cinema" name="cinema{{ i }}">
+              <option *ngFor="let cinema of cinemas" [value]="cinema.id">
+                    {{ cinema.name }}
+              </option>
+            </select>
+          </div>
+          
          <br> <button (click)="deleteShowTime()" class="btn btn-danger">Delete</button>       
         </li> 
       </ul>
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
       <label for="cinemas">Select Cinemas:</label>
       <div *ngFor="let cinema of cinemas">
         <label>
@@ -134,7 +152,7 @@
           {{ cinema.name }}
         </label>
       </div>
-    </div>
+    </div> -->
 <button
 class="badge badge-primary mr-2"
 (click)="addShowTime()">Add Show Time</button>

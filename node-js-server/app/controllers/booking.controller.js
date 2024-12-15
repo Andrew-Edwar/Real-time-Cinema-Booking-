@@ -1,48 +1,41 @@
 const db = require("../models");
 const Booking= db.Bookings
-const firebaseFunctions = require('../services/firebaseFunctions')
+const firebaseFunctions = require('../middlewares/firebaseNotfiy')
 
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.cinemaID) {
-    res.status(400).send({ message: "Content can not be empty!" });
+  if (!req.body.ShowTime || !Array.isArray(req.body.ShowTime) || req.body.ShowTime.length === 0) {
+    res.status(400).send({ message: "ShowTime should be an array with at least one entry." });
     return;
   }
-  // const ShowTime = req.body.ShowTime.map(ShowTime => ({
-  //   date: ShowTime.date,
-  //   hours: ShowTime.hours,
-  //   endTime: ShowTime.endTime
-  // }));
 
-  // Create a Tutorial
+  // Create a new booking
   const booking = new Booking({
-    cinemaID: req.body.cinemaID,
     CustomerID: req.body.CustomerID,
     vendorID: req.body.vendorID,
     MovieID: req.body.MovieID,
-    ShowTime: {
-      date: req.body.ShowTime.date,
-      hours: req.body.ShowTime.hours,
-      endTime: req.body.ShowTime.endTime,
-      selectedSeats: req.body.ShowTime.selectedSeats // Add seats
-    },
-  });
- 
+    ShowTime: req.body.ShowTime.map(show => ({
+      date: show.date,
+      hours: show.hours,
+      endTime: show.endTime,
+      selectedSeats: show.selectedSeats,
+      cinema: show.cinema
+    })),
 
-  // Save Tutorial in the database
+  });
+
+  // Save the booking to the database
   booking
-    .save(booking)
+    .save()
     .then(data => {
       res.send(data);
-      firebaseFunctions.sendFCMNotification("A New Booking Was Added !", `with Seats "${req.body.ShowTime.selectedSeats}".`, 
-            'dUdlXzng_UnRsrhHoV8zFv:APA91bHcEYl3LeUZ79h027y2NBpSHi7b5yVleG8ElHZ9hne_WvjsBIjVYhfmc7uB0QYSJ0vSKAOv6_ou0ZWvWI1HNJeC23PoYqF9ZSLpqdYFA8cgu-R_lZbpJJfj9Wdx7-QKYXWN5bzf');
-          
+      // Send Firebase Notification (Uncomment and configure properly)
+      // firebaseFunctions.sendFCMNotification("A New Booking Was Added!", `with Seats "${req.body.ShowTime[0].selectedSeats}".`, 'YOUR_FIREBASE_TOKEN');
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the booking."
+        message: err.message || "Some error occurred while creating the booking."
       });
     });
 };

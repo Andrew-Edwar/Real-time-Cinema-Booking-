@@ -1,7 +1,7 @@
-
 <div>
   <div class="submit-form">
     <div *ngIf="!submitted">
+      <!-- Title Input -->
       <div class="form-group">
         <label for="title">Title</label>
         <input
@@ -14,6 +14,7 @@
         />
       </div>
 
+      <!-- Description Input -->
       <div class="form-group">
         <label for="description">Description</label>
         <input
@@ -25,6 +26,7 @@
         />
       </div>
 
+      <!-- Movie Time Input -->
       <div class="form-group">
         <label for="MovieTime">Movie Time in minutes</label>
         <input
@@ -40,49 +42,79 @@
         />
       </div>
 
-      <div class="form-group" *ngFor="let showtime of tutorial.ShowTime; let i = index">
-        <label>Show Time {{ i + 1 }}: <br>
-          Date <input class="form-control" type="date" [(ngModel)]="showtime.date" [min]="getCurrentDate()" />
-          Hour <input class="form-control" type="time" [(ngModel)]="showtime.hours" />
-          <br> <button (click)="deleteShowTime()" class="btn btn-danger">Delete</button>
-        </label>
+      <!-- ShowTime List -->
+      <div
+        class="form-group"
+        *ngFor="let showtime of tutorial.ShowTime; let i = index"
+      >
+        <h5>Show Time {{ i + 1 }}</h5>
+
+        <!-- Date Input -->
+        <label for="date{{ i }}">Date</label>
+        <input
+          class="form-control"
+          type="date"
+          [(ngModel)]="showtime.date"
+          [min]="getCurrentDate()"
+          name="date{{ i }}"
+        />
+
+        <!-- Hour Input -->
+        <label for="hours{{ i }}">Hour</label>
+        <input
+          class="form-control"
+          type="time"
+          [(ngModel)]="showtime.hours"
+          name="hours{{ i }}"
+        />
+
+       <!-- Cinema Dropdown inside each ShowTime -->
+<label for="cinema{{ i }}">Associated Cinema</label>
+<select class="form-control" [(ngModel)]="showtime.cinema" name="cinema{{ i }}">
+  <option *ngFor="let cinema of cinemas" [value]="cinema.id">
+    {{ cinema.name }}
+  </option>
+</select>
+
+
+        <!-- Delete Button -->
+        <button (click)="deleteShowTime(i)" class="btn btn-danger mt-2">
+          Delete Show Time
+        </button>
       </div>
 
-      <div *ngFor="let cinema of cinemas">
-        <label>
-          <input
-            type="checkbox"
-            [value]="cinema.id"
-            (change)="cinemaCheckboxChanged(cinema)"
-            [checked]="isCinemaSelected(cinema)"
-            />
-          {{ cinema.name }}
-        </label>
-      </div>
+      <!-- Add More Show Times Button -->
+      <button (click)="addShowTime()" class="btn btn-primary mt-3">
+        Add Show Time
+      </button>
+
       
 
-      <!-- Add more show times button -->
-      <button (click)="addShowTime()" class="btn button">Add Show Time</button>
+      <!-- Submit Button -->
+      <button (click)="saveTutorial()" class="btn btn-success mt-4">
+        Submit
+      </button>
 
-      <button (click)="saveTutorial()" class="btn btn-success">Submit</button>
-      <div *ngIf="titleExists">
-        <br /><p class="error-message">A tutorial with the same title already exists. Please choose a different title.</p>
+      <!-- Validation Error Messages -->
+      <div *ngIf="titleExists" class="alert alert-danger mt-3">
+        A tutorial with the same title already exists. Please choose a different
+        title.
       </div>
-      <div *ngIf="movieTimeError">
-        <br /><p class="error-message">Time cannot be negative 😗</p>
+      <div *ngIf="movieTimeError" class="alert alert-danger mt-3">
+        Movie Time cannot be negative or exceed 240 minutes.
       </div>
-      <div *ngIf="oldShowTime">
-        <br /><p class="error-message">Showtime date cannot be before today.</p>
+      <div *ngIf="oldShowTime" class="alert alert-danger mt-3">
+        Showtime date cannot be before today.
       </div>
-      <div *ngIf="hourError">
-        <br /><p class="error-message">Showtime should be at least 6 hours from the current time.</p>
+      <div *ngIf="hourError" class="alert alert-danger mt-3">
+        Showtime should be at least 6 hours from the current time.
       </div>
     </div>
 
-    <!-- Success message -->
-    <div *ngIf="submitted">
+    <!-- Success Message -->
+    <div *ngIf="submitted" class="alert alert-success">
       <h4>Tutorial was submitted successfully!</h4>
-      <button class="btn btn-success" (click)="newTutorial()">Add</button>
+      <button class="btn btn-success" (click)="newTutorial()">Add New Tutorial</button>
     </div>
   </div>
 </div>

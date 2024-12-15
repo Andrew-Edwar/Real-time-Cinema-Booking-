@@ -2,17 +2,18 @@ module.exports = mongoose => {
 
   var schema = mongoose.Schema(
     {
-      cinemaID: { type: mongoose.Schema.Types.ObjectId, ref: 'cinema' },
       CustomerID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       MovieID: { type: mongoose.Schema.Types.ObjectId, ref: 'tutorial' },
       vendorID:{ type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-      ShowTime:
+      ShowTime: [
         {
-          date: String , // change the type and default value to string
+          date: String,
           hours: String,
-          endTime: String, 
-          selectedSeats: { type: [Number], default: [] }
-        },
+          endTime: String,
+          selectedSeats: { type: [Number], default: [] },
+          cinema: { type: mongoose.Schema.Types.ObjectId, ref: 'cinema' }
+        }
+      ],
      // Array to store selected seat indices
         selectedMovieIndex: { type: Number },  // Index of the selected movie
         selectedMovieValue: { type: String } 

@@ -65,6 +65,14 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+const { graphqlHTTP } = require('express-graphql');
+const cinemaSchema = require('./app/graphql/cinema.graphql');
+
+// Add GraphQL route
+app.use('/graphql', graphqlHTTP({
+  schema: cinemaSchema,
+  graphiql: true // Enable GraphiQL for testing
+}));
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {

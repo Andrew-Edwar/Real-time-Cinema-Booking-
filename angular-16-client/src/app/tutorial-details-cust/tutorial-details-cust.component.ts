@@ -18,6 +18,9 @@ import { ElementRef } from '@angular/core';
 export class TutorialDetailsComponentCust implements OnInit {
   selectedSeats: number[] = [];
   movieSelect: any;
+  selectedCinema: string = ''; // To store the selected cinema
+  filteredShowTimes: any[] = [];
+  cinemaNameMap: { [id: string]: string } = {}; // Stores cinema ID to name mapping
 
 
   // Function to toggle seat selection
@@ -80,10 +83,8 @@ export class TutorialDetailsComponentCust implements OnInit {
   booking: Booking = {
     CustomerID: '',
     MovieID: '',
-    ShowTime:{date:'',hours:'',endTime:'',selectedSeats:[]},
-    vendorID:'',
-    cinemaID:'',
-    
+    ShowTime:[{date:'',hours:'',endTime:'',selectedSeats:[], cinema: ''}],
+    vendorID:'',    
   };
 
   @Input() currentTutorial: Tutorial = {
@@ -91,12 +92,13 @@ export class TutorialDetailsComponentCust implements OnInit {
     description: '',
     MovieTime: 0,
     ShowTime: [{ date: '', hours: '', endTime: '' ,    totalBookedSeats: 0, // Initialize with the total booked seats
-    bookedSeats: []}],
+    bookedSeats: [], cinema: ''
+  }],
     published: true,
     
   };
 
-  selectedShowTime: any = { date: '', hours: '', endTime: '', selectedSeats: [] };
+  selectedShowTime: any = { date: '', hours: '', endTime: '', selectedSeats: [], cinema: '' };
 
 
 
@@ -114,60 +116,26 @@ export class TutorialDetailsComponentCust implements OnInit {
 
   ) {}
 
-  cinemas: Cinema[] = [];
-  loadCinemas(): void {
-    this.cinemaService.getAll().subscribe(
-      (data) => {
-        console.log('All cinemas data:', data);
-        // Assuming currentTutorial has an array of cinema IDs
-        if (this.currentTutorial && this.currentTutorial.cinemas) {
-          // Create an empty array to store the cinemas by ID
-          const cinemaIds = this.currentTutorial.cinemas;
-          this.cinemas = [];
   
-          // Loop through each cinema ID and fetch the cinema details
-          cinemaIds.forEach(cinemaId => {
-            this.cinemaService.get(cinemaId).subscribe(
-              (cinema) => {
-                console.log('Fetched cinema:', cinema);
-                this.cinemas.push(cinema);  // Add the fetched cinema to the array
-              },
-              (error) => {
-                console.error('Error loading cinema by ID:', error);
-              }
-            );
-          });
-        }
-      },
-      (error) => {
-        console.error('Error loading cinemas:', error);
-      }
-    );
-  }
-  
-
-  selectedCinema: Cinema | undefined;
-  onCinemaSelected(cinema: Cinema): void {
-    this.selectedCinema = cinema;
-  }
 
   ngOnInit(): void {
     this.message = '';
     this.getTutorial(this.route.snapshot.params['id']);
-    this.loadCinemas();
+
+
   }
 
+  
+  
+  
   submitted = false;
 
   saveBooking(): void {
     console.log(this.booking);
     const currentUser = this.storageService.getUser();
-    const { date, hours, endTime } = this.selectedShowTime;
+    const { date, hours, endTime , cinema } = this.selectedShowTime;
   
-    if (!this.selectedCinema) {
-      console.error('Please select a cinema.');
-      return;
-    }
+ 
   
     const selectedMovieElement = document.getElementById('movie') as HTMLSelectElement;
     const selectedMovieIndex = selectedMovieElement.selectedIndex;
@@ -181,7 +149,7 @@ export class TutorialDetailsComponentCust implements OnInit {
     // Find the corresponding ShowTime in currentTutorial and add the new booked seats
     const selectedShowTime = this.currentTutorial.ShowTime?.find(
       showTime => showTime.date === date && showTime.hours === hours && showTime.endTime === endTime
-    );
+      &&showTime.cinema === cinema);
   
     if (selectedShowTime) {
       // Add the new booked seats to the existing ones
@@ -193,6 +161,7 @@ export class TutorialDetailsComponentCust implements OnInit {
         date: date,
         hours: hours,
         endTime: endTime,
+        cinema: cinema,
         totalBookedSeats: selectedSeatsNumbers.length,
         bookedSeats: selectedSeatsNumbers,
       };
@@ -202,17 +171,21 @@ export class TutorialDetailsComponentCust implements OnInit {
     const data: Booking = {
       CustomerID: currentUser.id,
       MovieID: this.currentTutorial.id,
-      ShowTime: {
+      ShowTime: [{
         date: date,
         hours: hours,
         endTime: endTime,
+        cinema:cinema,
         selectedSeats: selectedSeatsNumbers,
-      },
+      }],
       vendorID: this.currentTutorial.vendorID,
-      cinemaID: this.selectedCinema.id,
       selectedMovieIndex: selectedMovieIndex,
       selectedMovieValue: selectedMovieValue,
     };
+
+
+    console.log( data);
+
   
     console.log('Data to be saved:', data);
   
@@ -241,9 +214,8 @@ export class TutorialDetailsComponentCust implements OnInit {
     this.booking = {
       CustomerID: '',
       MovieID: '',
-      ShowTime:{date:'',hours:'',endTime:''},
+      ShowTime:[{date:'',hours:'',endTime:'', cinema: ''}],
       vendorID:'',
-      cinemaID:''
     };
   }
 
@@ -252,6 +224,8 @@ export class TutorialDetailsComponentCust implements OnInit {
       next: (data) => {
         this.currentTutorial = data;
         console.log(data);
+        this.getCinemaNames();
+
       },
       error: (e) => console.error(e),
     });
@@ -260,7 +234,7 @@ export class TutorialDetailsComponentCust implements OnInit {
   getShowTimeByDateAndHour(date: String, hour: string): any | undefined {
     if (this.currentTutorial.ShowTime) {
       return this.currentTutorial.ShowTime.find(
-        (showTime) => showTime.date === date && showTime.hours == hour
+        (showTime) => showTime.date === date && showTime.hours == hour  
       );
     }
     return undefined;
@@ -286,9 +260,55 @@ export class TutorialDetailsComponentCust implements OnInit {
       (showTime) =>
         showTime.date === this.selectedShowTime.date &&
         showTime.hours === this.selectedShowTime.hours &&
-        showTime.endTime === this.selectedShowTime.endTime
+        showTime.endTime === this.selectedShowTime.endTime &&
+        showTime.cinema === this.selectedShowTime.cinema
+
     );
   }
+
+    
+  getUniqueCinemas(): string[] {
+    const cinemas = this.currentTutorial?.ShowTime?.map((showTime) => showTime.cinema)
+      .filter((cinema): cinema is string => cinema != null);
+
+    return cinemas ? Array.from(new Set(cinemas)) : [];
+  }
+
+
+  getCinemaNames() {
+
+    const uniqueCinemaIds = this.getUniqueCinemas();
+    console.log('Unique Cinema IDs:', uniqueCinemaIds); // Log the unique cinema IDs
+    uniqueCinemaIds.forEach((cinemaId) => {
+      console.log('Fetching cinema:', cinemaId); // Log each cinemaId
+      this.cinemaService.get(cinemaId).subscribe(
+        (cinema) => {
+          console.log('Cinema :', cinema);
+          console.log('Cinema.name :', cinema.name);
   
+          this.cinemaNameMap[cinemaId] = cinema.name || 'Unknown Cinema';
+          console.log('Cinema Name Map:', this.cinemaNameMap);
+        },
+        (error) => {
+          console.error(`Failed to fetch cinema with ID ${cinemaId}`, error);
+          this.cinemaNameMap[cinemaId] = 'Unknown Cinema';
+        }
+      );
+    });
+  }
   
+
+
+
+  
+  onCinemaSelected(): void {
+    if (this.selectedCinema) {
+      this.filteredShowTimes = this.currentTutorial.ShowTime?.filter(
+        (showtime) => showtime.cinema === this.selectedCinema
+      ) || [];
+
+    } else {
+      this.filteredShowTimes = [];
+    }
+  }
 }

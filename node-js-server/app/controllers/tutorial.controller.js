@@ -1,7 +1,7 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
 const admin = require('firebase-admin');
-const firebaseFunctions = require('../services/firebaseFunctions')
+const firebaseFunctions = require('../middlewares/firebaseNotfiy')
 const redisClient = require('../config/redis.config'); // Adjust path as needed
 
 
@@ -46,32 +46,35 @@ function calculateEndTime(hours, movieTime) {
 
 exports.create = (req, res) => {
   if (!req.body.title) {
-    res.status(400).send({ message: "Content can not be empty!" });
+    res.status(400).send({ message: "Content or cinemas can not be empty!" });
     return;
   }
 
-  const ShowTime = req.body.ShowTime.map(ShowTime => ({
-    date: ShowTime.date,
-    hours: ShowTime.hours,
-    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime),
-    totalBookedSeats: 0, // Initialize totalBookedSeats to 0
-    bookedSeats: [] // Initialize bookedSeats array to empty
-  }));
 
+  // Create showtime for each cinema
+  const ShowTime = 
+    req.body.ShowTime.map(show => ({
+      date: show.date,
+      hours: show.hours,
+      endTime: calculateEndTime(show.hours, req.body.MovieTime),
+      totalBookedSeats: 0, // Initialize to 0
+      bookedSeats: [], // Initialize to empty array
+      cinema:show.cinema // Associate with the current cinema
+    }));
+
+  // Create the tutorial with multiple showtimes
   const tutorial = new Tutorial({
     title: req.body.title,
     description: req.body.description,
     MovieTime: req.body.MovieTime,
     ShowTime: ShowTime,
     published: req.body.published ? req.body.published : false,
-    cinemas: req.body.cinemas,
     vendorID: req.body.vendorID,
   });
 
   tutorial
-    .save(tutorial)
+    .save()
     .then(data => {
-      // sendFCMNotification("New Tutorial Added!", `A new tutorial "${req.body.title}" has been added.`, 'c2gvajlLxmSG6fCcleqjGa:APA91bE8lH8aLm6DlsWvmTpPhOqs9kIbhtIW5Pb_9NVEEtm7q0ELDH1N0t-VhaKaGVoGFiOV78tPBcL3ZrKmFnlEJ6YRKxLdDznfw4crgxi439qpRkhqfihfgSfGFJI3J_Jvi1BL94S4');
       res.send(data);
     })
     .catch(err => {
@@ -80,6 +83,7 @@ exports.create = (req, res) => {
       });
     });
 };
+
 
 // Retrieve all Tutorials from the database.
 exports.findAll = (req, res) => {
@@ -131,62 +135,69 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Tutorial by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
-      message: "Data to update can not be empty!"
+      message: "Data to update cannot be empty!"
     });
   }
 
   const id = req.params.id;
 
-  const ShowTime = req.body.ShowTime.map(ShowTime => ({
-    date: ShowTime.date,
-    hours: ShowTime.hours,
-    endTime: calculateEndTime(ShowTime.hours, req.body.MovieTime),
-    totalBookedSeats: ShowTime.totalBookedSeats || 0,
-    bookedSeats: ShowTime.bookedSeats || []
-  }));
+  try {
+    // Find the tutorial by ID
+    const tutorial = await Tutorial.findById(id);
 
-  const selectedCinemas = req.body.cinemas || [];
-
-  Tutorial.findById(id)
-    .then(existingTutorial => {
-      if (!existingTutorial) {
-        res.status(404).send({
-          message: `Cannot update Tutorial with id=${id}. Tutorial not found!`
-        });
-        return;
-      }
-
-      existingTutorial.title = req.body.title;
-      existingTutorial.description = req.body.description;
-      existingTutorial.MovieTime = req.body.MovieTime;
-      existingTutorial.ShowTime = ShowTime;
-      existingTutorial.cinemas = selectedCinemas;
-      existingTutorial.published = req.body.published;
-
-      existingTutorial.save()
-        .then(data => {
-          res.send({ message: "Tutorial was updated successfully.", data });
-
-          if (req.body.published) {
-            firebaseFunctions.sendFCMNotification("New Tutorial Published!", `A new tutorial "${req.body.title}" has been published.`, 
-            'egqdV8IgY6vpZQLpsgmQoN:APA91bGDMsEm-goUEd1LLDangcHIttoJ9j5ZSvXaWsipr1-uBib5rdD9nYI-26imS-m2m2S88O1KcvfXdD3yPVsW2MZ3Jdti415gh_f9Ck_QKLryJs0SrnCzbEHhVdBbrRaRx72vBxyx');
-          }
-        })
-        .catch(err => {
-          res.status(500).send({
-            message: "Error updating Tutorial with id=" + id
-          });
-        });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving Tutorial with id=" + id
+    if (!tutorial) {
+      return res.status(404).send({
+        message: `Cannot update Tutorial with id=${id}. Tutorial not found!`
       });
+    }
+
+    // Update the fields
+    tutorial.title = req.body.title || tutorial.title;
+    tutorial.description = req.body.description || tutorial.description;
+    tutorial.MovieTime = req.body.MovieTime || tutorial.MovieTime;
+    tutorial.published = req.body.published !== undefined ? req.body.published : tutorial.published;
+
+    // Update ShowTime array
+    if (req.body.ShowTime) {
+      tutorial.ShowTime = req.body.ShowTime.map(show => ({
+        date: show.date,
+        hours: show.hours,
+        endTime: calculateEndTime(show.hours, req.body.MovieTime || tutorial.MovieTime),
+        totalBookedSeats: show.totalBookedSeats || 0,
+        bookedSeats: show.bookedSeats || [],
+        cinema: show.cinema // Expect the updated cinema ID to be provided
+      }));
+    }
+
+    // Save the updated tutorial
+    const updatedTutorial = await tutorial.save();
+
+    res.send({
+      message: "Tutorial was updated successfully.",
+      data: updatedTutorial
     });
+
+    // Optionally, send an FCM notification if the tutorial is published
+    
+      if (req.body.published) {
+        const cacheKey = `published-tutorials:${tutorial.vendorID}`;
+      await redisClient.del(cacheKey);
+        firebaseFunctions.sendFCMNotification("New Tutorial Published!", `A new tutorial "${req.body.title}" has been published.`, 
+        'fVM06kbH7oWRRO8CVHKk6w:APA91bHq8o4U9NpJrjoz8sMWRmsqwqNLE55LGnDixZ4I0dM_chRRZrJWCV1V8l_CUVOO8AnTGf2fDMrAWQBFkEU7xgh1Dv04BDGOXJy_JqOMEzAgeBNMhu8');
+        }
+  } catch (err) {
+    console.error("Error updating tutorial:", err);
+    res.status(500).send({
+      message: "Error updating Tutorial with id=" + id
+    });
+  }
 };
+
+
+
 
 // Delete a Tutorial with the specified id in the request
 exports.delete = (req, res) => {

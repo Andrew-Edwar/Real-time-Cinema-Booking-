@@ -26,11 +26,15 @@
           class="list-group-item"
           *ngFor="let showtime of currentTutorial.ShowTime; let i = index"
         >
-        <label><strong>Show Time {{ i + 1 }}:</strong></label><br>
-        <label><strong> Date:</strong> {{ showtime.date }}</label><br>
-        <label><strong> Start Time:</strong> {{ showtime.hours }}</label><br>
-        <label><strong> End Time:</strong> {{ showtime.endTime }}</label>
-      </li>
+          <label><strong>Show Time {{ i + 1 }}:</strong></label><br>
+          <label><strong>Date:</strong> {{ showtime.date }}</label><br>
+          <label><strong>Start Time:</strong> {{ showtime.hours }}</label><br>
+          <label><strong>End Time:</strong> {{ showtime.endTime }}</label><br>
+
+          
+
+          
+        </li>
       </ul>
     </div>
    
@@ -49,7 +53,7 @@
 
   <!-- the booking section -->
   <ng-template #editable>
-    <div>
+    <!-- <div>
       <label for="showTimeDropdown"><strong>Select Show Time:</strong></label>
       <select id="showTimeDropdown" class="form-control" [(ngModel)]="selectedShowTime" (change)="onShowTimeSelected()" [ngModelOptions]="{standalone: true}">
         <option *ngFor="let showtime of currentTutorial.ShowTime; let i = index" [ngValue]="showtime">
@@ -58,15 +62,52 @@
       </select>
       
       
-    </div>
-    <div>
+    </div> -->
+    
+
+<div>
+  <label for="cinemaDropdown"><strong>Select Cinema:</strong></label>
+  <select
+    id="cinemaDropdown"
+    class="form-control"
+    [(ngModel)]="selectedCinema"
+    (change)="onCinemaSelected()"
+    [ngModelOptions]="{ standalone: true }"
+  >
+    <option *ngFor="let cinemaId of getUniqueCinemas()" [value]="cinemaId">
+      {{ cinemaNameMap[cinemaId] || 'Loading Cinema...' }}
+    </option>
+  </select>
+</div>
+<div *ngIf="filteredShowTimes.length > 0">
+  <!-- Show Time Dropdown -->
+  <label for="showTimeDropdown"><strong>Select Show Time:</strong></label>
+  <select
+    id="showTimeDropdown"
+    class="form-control"
+    [(ngModel)]="selectedShowTime"
+    (change)="onShowTimeSelected()"
+    [ngModelOptions]="{ standalone: true }"
+  >
+    <option *ngFor="let showtime of filteredShowTimes; let i = index" [ngValue]="showtime">
+      Show Time {{ i + 1 }} - Date: {{ showtime.date }} | Start Time: {{ showtime.hours }} | End Time: {{ showtime.endTime }}
+    </option>
+  </select>
+</div>
+<div *ngIf="filteredShowTimes.length === 0 && selectedCinema">
+  <p>No showtimes available for the selected cinema.</p>
+</div>
+
+    <!-- <div>
       <label for="cinemaDropdown"><strong>Select Cinema:</strong></label>
       <select id="cinemaDropdown" class="form-control" [(ngModel)]="selectedCinema">
         <option *ngFor="let cinema of cinemas" [ngValue]="cinema" (click)="onCinemaSelected(cinema)">
           {{ cinema.name }}
         </option>
       </select>
-    </div>
+    </div> -->
+
+            
     <div >
       <select id="movie">
         <option >
